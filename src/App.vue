@@ -13,6 +13,7 @@
   width: 100%;
   height: 100%;
   font-size: 14px;
+  color: #141617;
 }
 * {
   box-sizing: border-box;
@@ -23,5 +24,13 @@
 }
 ul, li {
   list-style: none;
+}
+p.overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+div, p, li, h1, h2, h3, h4, h5, h6 {
+  user-select: none;
 }
 </style>
