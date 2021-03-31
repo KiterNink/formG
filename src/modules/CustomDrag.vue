@@ -8,6 +8,7 @@
 		:group="group"
 		@start="isDragging = true"
 		@end="isDragging = false"
+		@change="listAdded"
 		:component-data="{
 			tag: tag,
 			type: 'transition-group',
@@ -18,7 +19,6 @@
 			<li class="list-group-item" v-if="tag === 'ul'">
 				<slot :element="element"></slot>
 			</li>
-			<slot :element="element" v-else></slot>
 		</template>
 		<template #footer>
 			<slot name="footer"></slot>
@@ -59,9 +59,15 @@ export default {
 				},
 			}),
 		});
+		const listAdded = (e) => {
+			if (e.added) {
+				vm.emit("setUniqId", e.added.newIndex);
+			}
+		};
 		return {
 			...toRefs(state),
 			isDragging: ref(false),
+			listAdded,
 		};
 	},
 };

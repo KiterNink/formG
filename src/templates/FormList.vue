@@ -17,8 +17,9 @@
 					tag="ul"
 					v-model="formList"
 					class="el-form-wrap"
-					itemKey="name"
+					item-key="id"
 					group="com"
+					@setUniqId="setUniqId"
 				>
 					<template #default="{ element }">
 						<p class="item-label">{{ element.label }}:</p>
@@ -117,8 +118,15 @@ export default {
 				configList.value.find((item) => item.label === "布局").value;
 			}),
 		});
+		const setUniqId = (index) => {
+			const item = state.formList[index];
+			if (!item.id) {
+				item.id = Date.now();
+			}
+		};
 		return {
 			...toRefs(state),
+			setUniqId,
 		};
 	},
 };
