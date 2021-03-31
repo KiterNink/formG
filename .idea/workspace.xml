@@ -20,16 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2012e5ee-7afd-4c3b-8ae6-ddc8a4982409" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/components.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/CustomDrag.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/CustomDrag.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/CustomDrag.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ComponentList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ComponentList.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ConfigPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ConfigPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Home.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/routes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,6 +79,8 @@
       <workItem from="1616664799360" duration="5000" />
       <workItem from="1616724197170" duration="9301000" />
       <workItem from="1616743952238" duration="120000" />
+      <workItem from="1616984968149" duration="1995000" />
+      <workItem from="1617068349360" duration="668000" />
     </task>
     <servers />
   </component>
@@ -102,5 +98,11 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="420" y="177" width="599" height="486" key="find.popup" timestamp="1616987111649">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state x="420" y="177" width="599" height="486" key="find.popup/0.25.1440.875/-1920.-155.1920.971/1440.-92.1920.1055@0.25.1440.875" timestamp="1616987111649" />
   </component>
 </project>
