@@ -16,7 +16,11 @@
 		}"
 	>
 		<template #item="{ element }">
-			<li class="list-group-item" v-if="tag === 'ul'">
+			<li
+				class="list-group-item"
+				v-if="tag === 'ul'"
+				@click="handleClick(element)"
+			>
 				<slot :element="element"></slot>
 			</li>
 		</template>
@@ -28,7 +32,7 @@
 
 <script>
 import draggable from "vuedraggable";
-import { reactive, toRefs, ref, computed } from "vue";
+import { reactive, toRefs, ref, computed, inject } from "vue";
 
 export default {
 	name: "CustomDrag",
@@ -64,10 +68,15 @@ export default {
 				vm.emit("setUniqId", e.added.newIndex);
 			}
 		};
+		const clickItem = inject("showRightDrawer");
+		const handleClick = (item) => {
+			clickItem(item);
+		};
 		return {
 			...toRefs(state),
 			isDragging: ref(false),
 			listAdded,
+			handleClick,
 		};
 	},
 };

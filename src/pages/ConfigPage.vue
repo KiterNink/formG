@@ -127,12 +127,18 @@ export default {
 		const showSettingDrawer = () => {
 			setting.visible = true;
 		};
+		const showRightDrawer = (item) => {
+			block.visible = true;
+			block.configList = item.config;
+		};
+		provide("showRightDrawer", showRightDrawer);
 		return {
 			...toRefs(state),
 			setting,
 			block,
 			selectTemplate,
 			showSettingDrawer,
+			showRightDrawer,
 		};
 	},
 };
