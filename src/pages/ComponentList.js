@@ -3,25 +3,123 @@ export const moduleList = [
 		name: "tInput",
 		label: "输入框",
 		prop: "el-input",
+		default: "",
 		config: [
 			{ label: "占位文字", value: "请输入", prop: "placeholder" },
-			{ label: "是否可清空", value: true, prop: "clearable" },
-			{ label: "是否禁用", value: false, prop: "disabled" },
+			{
+				label: "是否可清空",
+				value: true,
+				prop: "clearable",
+				type: "radio",
+				options: [
+					{
+						label: "可清空",
+						value: true,
+					},
+					{ label: "不可清空", value: false },
+				],
+			},
+			{
+				label: "是否禁用",
+				value: false,
+				type: "radio",
+				prop: "disabled",
+				options: [
+					{
+						label: "禁用",
+						value: true,
+					},
+					{ label: "不禁用", value: false },
+				],
+			},
 		],
 	},
 	{
 		name: "tDatePicker",
 		label: "日期选择器",
 		prop: "el-date-picker",
-		config: [],
+		config: [
+			{
+				label: "是否禁用",
+				value: false,
+				prop: "disabled",
+				type: "radio",
+				options: [
+					{
+						label: "禁用",
+						value: true,
+					},
+					{ label: "不禁用", value: false },
+				],
+			},
+			{
+				label: "类型",
+				type: "select",
+				prop: "type",
+				value: "date",
+				options: [
+					{ label: "年份选择", value: "year" },
+					{ label: "月份选择", value: "month" },
+					{ label: "日期选择", value: "date" },
+					{ label: "周选择", value: "week" },
+					{ label: "日期时间", value: "datetime" },
+					{ label: "日期时间范围", value: "datetimerange" },
+					{ label: "日期范围", value: "daterange" },
+				],
+			},
+		],
 	},
 	{
 		name: "tSelect",
 		label: "下拉框",
 		prop: "el-select",
 		config: [
-			{ label: "是否多选", value: false, prop: "multiple" },
-			{ label: "是否可清空", value: true, prop: "clearable" },
+			{
+				label: "是否禁用",
+				value: false,
+				type: "radio",
+				prop: "disabled",
+				options: [
+					{
+						label: "禁用",
+						value: true,
+					},
+					{ label: "不禁用", value: false },
+				],
+			},
+			{
+				label: "是否可清空",
+				value: true,
+				prop: "clearable",
+				type: "radio",
+				options: [
+					{
+						label: "可清空",
+						value: true,
+					},
+					{ label: "不可清空", value: false },
+				],
+			},
+			{
+				label: "是否多选",
+				value: false,
+				prop: "multiple",
+				type: "radio",
+				options: [
+					{ label: "多选", value: true },
+					{ label: "单选", value: false },
+				],
+			},
+			{
+				label: "多选是否折叠标签",
+				value: false,
+				prop: "collapse-tags",
+				type: "radio",
+				options: [
+					{ label: "折叠", value: true },
+					{ label: "不折叠", value: false },
+				],
+			},
 		],
 	},
 ];
@@ -74,7 +172,24 @@ export const templateList = [
 		],
 		options: [],
 	},
-	{ label: "图表分析页面", value: "chartAnalysis" },
-	{ label: "问卷调查", value: "survey" },
-	{ label: "自定义", value: "custom" },
+	{
+		label: "图表分析页面",
+		value: "chartAnalysis",
+		list: ["tRadio", "tCheck"],
+		tConfig: [],
+	},
+	{
+		label: "问卷调查",
+		value: "survey",
+		list: ["tInput"],
+		tConfig: [
+			{ label: "标题", value: "问卷调查" },
+			{
+				label: "描述",
+				value: "为了更好的满足客户需求,进行以下问卷调查,请认真填写内容",
+			},
+			{ label: "头部海报", value: "", type: "image" },
+		],
+	},
+	{ label: "自定义", value: "custom", list: [], tConfig: [] },
 ];

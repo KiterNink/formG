@@ -18,6 +18,7 @@
 		<template #item="{ element }">
 			<li
 				class="list-group-item"
+				:class="customItemClass"
 				v-if="tag === 'ul'"
 				@click="handleClick(element)"
 			>
@@ -45,6 +46,7 @@ export default {
 			type: String,
 			default: "ul",
 		},
+		customItemClass: String,
 	},
 	setup(props, vm) {
 		const state = reactive({

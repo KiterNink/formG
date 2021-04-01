@@ -27,6 +27,7 @@
 							<component
 								:is="element.prop"
 								size="small"
+								style="width: 170px"
 							></component>
 						</div>
 					</template>

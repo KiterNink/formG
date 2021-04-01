@@ -124,4 +124,7 @@ export default {
 		display: block;
 	}
 }
+:deep(.el-input, .el-input__inner) {
+	width: 170px;
+}
 </style>

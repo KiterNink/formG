@@ -22,6 +22,16 @@
 			</el-dropdown>
 		</div>
 		<div class="right">
+			<el-button type="text" size="mini" @click="previewTemplate"
+				>预览</el-button
+			>
+			<el-button
+				type="text"
+				size="mini"
+				@click="saveTemplate"
+				style="margin-right: 20px"
+				>保存</el-button
+			>
 			<el-dropdown trigger="click">
 				<span class="user-name">
 					{{ userName
@@ -64,6 +74,14 @@
 		v-model:visible="block.visible"
 		direction="rtl"
 	></module-config-drawer>
+	<el-dialog
+		title="预览"
+		center
+		v-model="preview.visible"
+		@close="closeDialog"
+	>
+		<div id="preview-tem"></div>
+	</el-dialog>
 </template>
 
 <script>
@@ -108,6 +126,10 @@ export default {
 			configList: [],
 			visible: false,
 		});
+		const preview = reactive({
+			visible: false,
+			tem: null,
+		});
 		const selectTemplate = (command) => {
 			if (command !== setting.template) {
 				setting.template = command;
@@ -132,13 +154,37 @@ export default {
 			block.configList = item.config;
 		};
 		provide("showRightDrawer", showRightDrawer);
+		const generateTemplate = () => {
+			if (setting.template) {
+				// preview.tem =
+			}
+		};
+		const saveTemplate = () => {
+			if (setting.template) {
+				console.log("保存");
+				preview.tem = generateTemplate();
+			}
+		};
+		const previewTemplate = () => {
+			if (setting.template) {
+				preview.visible = true;
+				console.log("preview");
+			}
+		};
+		const closeDialog = () => {
+			preview.tem = null;
+		};
 		return {
 			...toRefs(state),
+			preview,
 			setting,
 			block,
 			selectTemplate,
 			showSettingDrawer,
 			showRightDrawer,
+			saveTemplate,
+			previewTemplate,
+			closeDialog,
 		};
 	},
 };
@@ -200,6 +246,9 @@ export default {
 				opacity: 0.9;
 				width: 100%;
 			}
+			:deep(.el-input, .el-input__inner) {
+				width: 170px;
+			}
 
 			.com-item-label {
 				position: absolute;
@@ -215,6 +264,7 @@ export default {
 	.canvas-wrap {
 		flex: 1;
 		margin-left: 20px;
+		padding-bottom: 30px;
 
 		.form-list {
 			display: flex;
@@ -258,7 +308,7 @@ export default {
 </style>
 
 <style lang="less" scoped>
-:deep(.el-input, .el-input__inner) {
-	width: 170px !important;
-}
+// :deep(.el-input, .el-input__inner) {
+// 	width: 170px !important;
+// }
 </style>
