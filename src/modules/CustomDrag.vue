@@ -20,7 +20,6 @@
 				class="list-group-item"
 				:class="customItemClass"
 				v-if="tag === 'ul'"
-				@click="handleClick(element)"
 			>
 				<slot :element="element"></slot>
 			</li>
@@ -70,15 +69,10 @@ export default {
 				vm.emit("setUniqId", e.added.newIndex);
 			}
 		};
-		const clickItem = inject("showRightDrawer");
-		const handleClick = (item) => {
-			clickItem(item);
-		};
 		return {
 			...toRefs(state),
 			isDragging: ref(false),
 			listAdded,
-			handleClick,
 		};
 	},
 };

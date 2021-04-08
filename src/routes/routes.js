@@ -1,22 +1,25 @@
-import ConfigPage from "../pages/ConfigPage.vue";
-import FormList from "@/templates/FormList.vue";
-import ChartAnalysis from "@/templates/ChartAnalysis.vue";
-import Custom from "@/templates/Custom.vue";
-import Survey from "@/templates/Survey.vue";
+import Config from "../pages/Config.vue";
+// import FormList from "@/templates/FormList.vue";
+// import Survey from "@/templates/Survey.vue";
+import Index from "../pages/index.vue";
+import Manage from "@/pages/Manage.vue";
 export const routes = [
 	{
-		name: "configPage",
+		name: "index",
 		path: "/",
-		component: ConfigPage,
+		component: Index,
+		redirect: { name: "manage" },
 		children: [
-			{ name: "formList", path: "formlist", component: FormList },
 			{
-				name: "chartAnalysis",
-				path: "chartAnalysis",
-				component: ChartAnalysis,
+				name: "manage",
+				path: "manage",
+				component: Manage,
 			},
-			{ name: "custom", path: "custom", component: Custom },
-			{ name: "survey", path: "survey", component: Survey },
+			{
+				name: "config",
+				path: "config",
+				component: Config,
+			},
 		],
 	},
 ];

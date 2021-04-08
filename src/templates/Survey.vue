@@ -6,7 +6,7 @@
 		v-if="!banner"
 	/>
 	<img :src="banner" alt="" class="banner" v-else />
-	<h1 class="title">问卷信息填报</h1>
+	<h1 class="title">{{ title }}</h1>
 	<p class="text">{{ text }}</p>
 	<div class="drag-wrap">
 		<custom-drag
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { computed, reactive, toRefs, inject } from "vue";
+import { computed, reactive, toRefs, inject, watch } from "vue";
 import { useRouter } from "vue-router";
 import CustomDrag from "@/modules/CustomDrag.vue";
 export default {
@@ -45,19 +45,15 @@ export default {
 		}
 		const state = reactive({
 			formList: [],
-			title: computed(
-				() =>
-					configList.value.find((item) => item.label === "标题").value
-			),
-			text: computed(
-				() =>
-					configList.value.find((item) => item.label === "描述").value
-			),
-			banner: computed(
-				() =>
-					configList.value.find((item) => item.label === "头部海报")
-						.value
-			),
+			title: configList.value.find((item) => item.label === "标题").value,
+			text: configList.value.find((item) => item.label === "描述").value,
+			banner: configList.value.find((item) => item.label === "头部海报")
+				.value,
+		});
+		watch(configList.value, (val) => {
+			state.title = val.find((item) => item.label === "标题").value;
+			state.text = val.find((item) => item.label === "描述").value;
+			state.banner = val.find((item) => item.label === "头部海报").value;
 		});
 		const setUniqId = (index) => {
 			const item = state.formList[index];

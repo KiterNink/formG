@@ -22,13 +22,15 @@
 					@setUniqId="setUniqId"
 				>
 					<template #default="{ element }">
-						<p class="item-label">{{ element.label }}:</p>
-						<div class="item content">
-							<component
-								:is="element.prop"
-								size="small"
-								style="width: 170px"
-							></component>
+						<div class="form-item">
+							<p class="item-label">{{ element.label }}:</p>
+							<div class="item content">
+								<component
+									:is="element.prop"
+									size="small"
+									style="width: 170px"
+								></component>
+							</div>
 						</div>
 					</template>
 					<template #footer>
@@ -96,28 +98,16 @@ export default {
 		}
 		const state = reactive({
 			formList: [],
-			preIcon: computed(
-				() =>
-					configList.value.find((item) => item.label === "前置图标")
-						.value
-			),
-			exportShow: computed(
-				() =>
-					configList.value.find((item) => item.label === "需要导出")
-						.value
-			),
-			title: computed(
-				() =>
-					configList.value.find((item) => item.label === "页头").value
-			),
-			splitTop: computed(
-				() =>
-					configList.value.find((item) => item.label === "上下分开")
-						.value
-			),
-			layout: computed(() => {
-				configList.value.find((item) => item.label === "布局").value;
-			}),
+			preIcon: configList.value.find((item) => item.label === "前置图标")
+				.value,
+			exportShow: configList.value.find(
+				(item) => item.label === "需要导出"
+			).value,
+			title: configList.value.find((item) => item.label === "页头").value,
+			splitTop: configList.value.find((item) => item.label === "上下分开")
+				.value,
+			layout: configList.value.find((item) => item.label === "布局")
+				.value,
 		});
 		const setUniqId = (index) => {
 			const item = state.formList[index];
@@ -125,6 +115,17 @@ export default {
 				item.id = Date.now();
 			}
 		};
+		watch(configList.value, (val) => {
+			state.preIcon = val.find((item) => item.label === "前置图标").value;
+			state.exportShow = val.find(
+				(item) => item.label === "需要导出"
+			).value;
+			state.title = val.find((item) => item.label === "页头").value;
+			state.splitTop = val.find(
+				(item) => item.label === "上下分开"
+			).value;
+			state.layout = val.find((item) => item.label === "布局").value;
+		});
 		return {
 			...toRefs(state),
 			setUniqId,
@@ -154,7 +155,7 @@ export default {
 				justify-content: space-between;
 				margin-right: -20px;
 				width: calc(100% + 20px);
-				:deep(.list-group-item) {
+				.form-item {
 					display: flex;
 					align-items: center;
 					margin-right: 20px;
