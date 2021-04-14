@@ -100,15 +100,7 @@
 </template>
 
 <script>
-import {
-	computed,
-	inject,
-	reactive,
-	toRefs,
-	watch,
-	createApp,
-	nextTick,
-} from "vue";
+import { computed, inject, reactive, toRefs, watch } from "vue";
 import templates from "@/assets/material/templates";
 import CustomDrag from "@/modules/CustomDrag.vue";
 import ModuleConfigDrawer from "@/modules/ModuleConfigDrawer.vue";
@@ -172,12 +164,6 @@ export default {
 		const previewClick = inject("previewClick");
 		watch(previewClick.value, (val) => {
 			state.previewVisible = true;
-			// nextTick(() => {
-			// 	state.page = createApp({
-			// 		name: "template-preview",
-			// 		template: `<h1>一个模板</h1>`,
-			// 	}).mount("#template-preview");
-			// });
 		});
 		watch(moreClick.value, (val) => {
 			state.pageConfigVisible = true;
