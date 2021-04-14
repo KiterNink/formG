@@ -1,9 +1,11 @@
 <template>
 	<div class="page-header common-space">
 		<div class="left">
+			<div class="bt-more" @click="clickMore"><i class="el-icon-more"></i></div>
 			<i>青塔出品</i>
 		</div>
 		<div class="right">
+			<el-button type="text" @click="preview" class="bt-preview">预览</el-button>
 			<el-dropdown trigger="click">
 				<span class="user-name">
 					{{ userName
@@ -23,15 +25,31 @@
 </template>
 
 <script>
-import { reactive, toRefs } from "vue";
+import { reactive, toRefs, ref, computed } from "vue";
 export default {
 	name: "index",
+	provide () {
+		return {
+			'moreClick': { value: computed(() => this.moreClick) },
+			'previewClick': { value: computed(() => this.previewClick) },
+		}
+	},
 	setup() {
 		const state = reactive({
 			userName: "kiter",
+			moreClick: 0,
+			previewClick: 0
 		});
+		const clickMore = () => {
+			state.moreClick++;
+		};
+		const preview = () => {
+			state.previewClick++;
+		}
 		return {
 			...toRefs(state),
+			preview,
+			clickMore
 		};
 	},
 };
@@ -43,9 +61,16 @@ export default {
 	padding: 0 80px;
 	border-bottom: 1px solid #dcdfe6;
 	position: relative;
+	.bt-more {
+		cursor: pointer;
+		position: absolute;
+		left: 40px;
+	}
+	.bt-preview {
+		margin: 0 12px;
+	}
 }
 .page-center {
-	padding: 0 80px;
 	height: calc(100% - 40px);
 }
 </style>

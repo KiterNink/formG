@@ -5,6 +5,7 @@ export default [
 		prop: "el-input",
 		config: [
 			{ label: "默认值", value: "" },
+			{ label: "传参字段", value: "" },
 			{ label: "标签", value: "输入框" },
 			{ label: "占位文字", value: "请输入", prop: "placeholder" },
 			{
@@ -41,6 +42,7 @@ export default [
 		prop: "el-date-picker",
 		config: [
 			{ label: "标签", value: "日期选择器" },
+			{ label: "传参字段", value: "" },
 			{
 				label: "是否禁用",
 				value: false,
@@ -122,6 +124,12 @@ export default [
 					{ label: "折叠", value: true },
 					{ label: "不折叠", value: false },
 				],
+			},
+			{
+				label: "下拉字段",
+				value: [],
+				slot: "el-option",
+				type: "select-config",
 			},
 		],
 	},

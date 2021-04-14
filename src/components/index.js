@@ -1,13 +1,13 @@
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 export const tInput = defineComponent({
-    template: `<el-input></el-input>`,
-    name: 'tInput'
+	template: `<el-input value=""></el-input>`,
+	name: "tInput",
 });
 export const tDatePicker = defineComponent({
-    template: `<el-date-picker></el-date-picker>`,
-    name: 'tDatePicker'
+	template: `<el-input value=""></el-input>`,
+	name: "tDatePicker",
 });
 export const tSelect = defineComponent({
-    template: `<el-select></el-select>`,
-    name: 'tSelect'
+	template: `<el-input value=""></el-input>`,
+	name: "tSelect",
 });

@@ -107,7 +107,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+h1 {
+	padding: 0 80px;
+}
 .template-manage-wrap {
+	padding: 0 80px;
 	.template-list {
 		display: flex;
 		align-items: center;

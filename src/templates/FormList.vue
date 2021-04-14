@@ -1,36 +1,29 @@
 <template>
-	<div
-		class="form-container common-card"
-		:style="{
-			marginBottom: splitTop ? '15px' : '',
-		}"
-	>
-		<div class="common-card-header common-space form-container-header">
-			<div class="left">
-				<img :src="preIcon" alt="" class="icon-pre-title" />
-				<p class="title">{{ title }}</p>
+	<div class="form-list-container">
+		<div class="common-card form-wrap">
+			<div class="common-card-header common-space">
+				<div class="left">
+					<img :src="icon" alt="" class="icon-title-pre" />
+					<p class="title">{{ title }}</p>
+				</div>
 			</div>
-		</div>
-		<div class="form-container-body">
-			<div class="el-form-container">
+			<div class="form-body">
 				<custom-drag
-					tag="ul"
 					v-model="formList"
-					class="el-form-wrap"
+					class="form-list"
+					custom-class="form-item"
 					item-key="id"
-					group="com"
+					group="module"
 					@setUniqId="setUniqId"
+					@handleClick="handleClick"
 				>
 					<template #default="{ element }">
-						<div class="form-item">
-							<p class="item-label">{{ element.label }}:</p>
-							<div class="item content">
-								<component
-									:is="element.prop"
-									size="small"
-									style="width: 170px"
-								></component>
-							</div>
+						<p class="item-label">{{ element.label }}:</p>
+						<div class="item-content">
+							<component
+								:is="element.prop"
+								style="width: 170px"
+							></component>
 						</div>
 					</template>
 					<template #footer>
@@ -41,73 +34,125 @@
 						></i>
 					</template>
 				</custom-drag>
-			</div>
-			<div class="button-group">
-				<el-button type="primary" size="small" plain>重置</el-button>
-				<el-button type="primary" size="small">查询</el-button>
-			</div>
-		</div>
-	</div>
-	<div class="table-container common-card">
-		<div class="common-card-header table-container-header common-space">
-			<div class="left">
-				<img
-					src="../assets/img/icon-search-blue.png"
-					alt=""
-					class="icon-pre-title"
-				/>
-				<p>查询结果：共 0 条记录，每页显示20条</p>
-			</div>
-			<div class="right" v-if="exportShow">
-				<div class="bt-export">
-					<img
-						src="../assets/img/icon-export.png"
-						alt=""
-						class="icon-export"
-					/>
-					<p>导出数据</p>
+				<div class="form-button-group">
+					<el-button size="small">重置</el-button>
+					<el-button size="small" type="primary">查询</el-button>
 				</div>
 			</div>
 		</div>
-		<div class="table-container-body">
-			<el-table :data="[]" style="width: 100%" border stripe>
-				<el-table-column prop="prop" label="label" width="width">
-				</el-table-column>
-			</el-table>
-			<div class="pagination-wrap">
-				<el-pagination layout="prev, pager, next" background :total="0">
-				</el-pagination>
+		<div class="common-card table-wrap">
+			<div class="table-header common-card-header common-space">
+				<div class="left">
+					<img
+						src="../assets/img/icon-search-blue.png"
+						alt=""
+						class="icon-title-pre"
+					/>
+					<p>查询结果： 共0条记录， 每页显示20条</p>
+				</div>
+				<div class="right">
+					<div class="bt-export" v-show="exportShow">
+						<img
+							src="../assets/img/icon-export.png"
+							alt=""
+							class="icon-export"
+						/>
+						<p>导出数据</p>
+					</div>
+				</div>
+			</div>
+			<div class="table-body" @click="tableConfig">
+				<el-table :data="[]" stripe border>
+					<el-table-column
+						v-for="(item, index) of columnList"
+						:key="index"
+						:label="item.label"
+						:min-width="item.width"
+					></el-table-column>
+				</el-table>
+			</div>
+			<div class="table-footer">
+				<div class="pagination-wrap">
+					<el-pagination
+						layout="prev, pager, next"
+						background
+						:total="0"
+					>
+					</el-pagination>
+				</div>
 			</div>
 		</div>
+		<el-dialog title="模板预览" v-model="previewVisible" center width="90%">
+			<!-- <div id="template-preview"></div> -->
+			<form-list-final></form-list-final>
+		</el-dialog>
 	</div>
+	<module-config-drawer
+		v-model:list="moduleConfig"
+		v-model:visible="moduleConfigVisible"
+		direction="rtl"
+	></module-config-drawer>
+	<module-config-drawer
+		v-model:list="pageConfig"
+		v-model:visible="pageConfigVisible"
+		direction="ltr"
+	></module-config-drawer>
 </template>
 
 <script>
-import { inject, reactive, watch, toRefs, computed } from "vue";
-import { useRouter } from "vue-router";
+import {
+	computed,
+	inject,
+	reactive,
+	toRefs,
+	watch,
+	createApp,
+	nextTick,
+} from "vue";
+import templates from "@/assets/material/templates";
 import CustomDrag from "@/modules/CustomDrag.vue";
+import ModuleConfigDrawer from "@/modules/ModuleConfigDrawer.vue";
+import FormListFinal from "@/templates/FormListFinal.vue";
+import { copyObj } from "../utils/tools";
 export default {
+	name: "FormList",
 	components: {
 		CustomDrag,
+		ModuleConfigDrawer,
+		FormListFinal,
 	},
-	setup(props, vm) {
-		const router = useRouter();
-		const configList = inject("configList");
-		if (configList.value.length === 0) {
-			router.replace("/");
-		}
+	setup() {
 		const state = reactive({
+			icon: computed(
+				() =>
+					state.pageConfig.find((item) => item.label === "前置图标")
+						.value
+			),
+			title: computed(
+				() =>
+					state.pageConfig.find((item) => item.label === "页头").value
+			),
+			exportShow: computed(
+				() =>
+					state.pageConfig.find((item) => item.label === "需要导出")
+						.value
+			),
 			formList: [],
-			preIcon: configList.value.find((item) => item.label === "前置图标")
-				.value,
-			exportShow: configList.value.find(
-				(item) => item.label === "需要导出"
-			).value,
-			title: configList.value.find((item) => item.label === "页头").value,
-			splitTop: configList.value.find((item) => item.label === "上下分开")
-				.value,
-			layout: configList.value.find((item) => item.label === "布局")
-				.value,
+			columnList: [],
+			moduleConfig: [],
+			moduleConfigVisible: false,
+			pageConfigVisible: false,
+			pageConfig: templates.find((item) => item.value === "formList")
+				.tConfig,
+			tableConfigList: [
+				{
+					label: "列字段",
+					value: [{ label: "", value: "", width: "" }],
+					type: "table-config",
+				},
+			],
+			previewVisible: false,
+			page: "",
 		});
 		const setUniqId = (index) => {
 			const item = state.formList[index];
@@ -115,96 +160,106 @@ export default {
 				item.id = Date.now();
 			}
 		};
-		watch(configList.value, (val) => {
-			state.preIcon = val.find((item) => item.label === "前置图标").value;
-			state.exportShow = val.find(
-				(item) => item.label === "需要导出"
-			).value;
-			state.title = val.find((item) => item.label === "页头").value;
-			state.splitTop = val.find(
-				(item) => item.label === "上下分开"
-			).value;
-			state.layout = val.find((item) => item.label === "布局").value;
+		const moreClick = inject("moreClick");
+		const handleClick = (element) => {
+			state.moduleConfigVisible = true;
+			state.moduleConfig = copyObj(element.config);
+		};
+		const tableConfig = () => {
+			state.moduleConfig = state.tableConfigList;
+			state.moduleConfigVisible = true;
+		};
+		const previewClick = inject("previewClick");
+		watch(previewClick.value, (val) => {
+			state.previewVisible = true;
+			// nextTick(() => {
+			// 	state.page = createApp({
+			// 		name: "template-preview",
+			// 		template: `<h1>一个模板</h1>`,
+			// 	}).mount("#template-preview");
+			// });
+		});
+		watch(moreClick.value, (val) => {
+			state.pageConfigVisible = true;
 		});
 		return {
 			...toRefs(state),
 			setUniqId,
+			handleClick,
+			moreClick,
+			tableConfig,
 		};
 	},
 };
 </script>
 
 <style lang="less" scoped>
-.form-container {
-	.form-container-header {
-		border-bottom: 1px solid #efefef;
-		.title {
-			font-size: 16px;
-			color: #141617;
-			font-weight: 700;
-		}
-	}
-	.form-container-body {
+.form-list-container {
+	background: #e8e9ed;
+	.common-card {
 		margin-top: 15px;
-		.el-form-container {
-			min-height: 55px;
-			.el-form-wrap {
+	}
+	.form-body {
+		padding: 15px 0;
+		.form-list {
+			display: flex;
+			flex-wrap: wrap;
+			margin-right: -20px;
+			min-height: 40px;
+			:deep(.form-item) {
 				display: flex;
 				align-items: center;
-				flex-wrap: wrap;
-				justify-content: space-between;
-				margin-right: -20px;
-				width: calc(100% + 20px);
-				.form-item {
-					display: flex;
-					align-items: center;
-					margin-right: 20px;
-					margin-bottom: 12px;
-					.item-label {
-						width: 80px;
-					}
-					.item-content {
-						width: 170px;
-					}
+				margin-right: 20px;
+				margin-bottom: 12px;
+				.item-label {
+					width: 80px;
 				}
-				i.zhanweifu {
-					width: 250px;
-					margin-right: 20px;
+				.item-content {
+					width: 170px;
+				}
+			}
+			.zhanweifu {
+				width: 250px;
+				margin-right: 20px;
+			}
+		}
+		.form-button-group {
+			text-align: right;
+		}
+	}
+	.table-wrap {
+		.table-header {
+			border-bottom: none;
+			.bt-export {
+				cursor: pointer;
+				width: 120px;
+				height: 32px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #3e74ff;
+				background-color: #eaf0ff;
+				border-radius: 2px;
+				.icon-export {
+					width: 18px;
+					height: 18px;
+					margin-right: 7px;
 				}
 			}
 		}
-		.button-group {
-			text-align: right;
-			padding-bottom: 15px;
+
+		.table-footer {
+			padding: 15px 0;
+			.pagination-wrap {
+				text-align: right;
+			}
 		}
 	}
 }
-.table-container {
-	.table-container-header {
-		padding: 8px 0;
-		height: auto;
-		.bt-export {
-			cursor: pointer;
-			width: 120px;
-			height: 32px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			color: #3e74ff;
-			background-color: #eaf0ff;
-			border-radius: 2px;
-			.icon-export {
-				width: 18px;
-				height: 18px;
-				margin-right: 7px;
-			}
-		}
-	}
-	.table-container-body {
-		.pagination-wrap {
-			padding: 20px 0;
-			text-align: right;
-		}
+:deep(.el-dialog) {
+	margin-top: 5vh !important;
+	.el-dialog__body {
+		background: #e8e9ed;
 	}
 }
 </style>

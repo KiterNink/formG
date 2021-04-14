@@ -18,7 +18,8 @@
 		<template #item="{ element }">
 			<li
 				class="list-group-item"
-				:class="customItemClass"
+				:class="customClass"
+				@click="handleClick(element)"
 				v-if="tag === 'ul'"
 			>
 				<slot :element="element"></slot>
@@ -32,7 +33,7 @@
 
 <script>
 import draggable from "vuedraggable";
-import { reactive, toRefs, ref, computed, inject } from "vue";
+import { reactive, toRefs, ref, computed } from "vue";
 
 export default {
 	name: "CustomDrag",
@@ -45,7 +46,7 @@ export default {
 			type: String,
 			default: "ul",
 		},
-		customItemClass: String,
+		customClass: String,
 	},
 	setup(props, vm) {
 		const state = reactive({
@@ -69,10 +70,14 @@ export default {
 				vm.emit("setUniqId", e.added.newIndex);
 			}
 		};
+		const handleClick = (data) => {
+			vm.emit("handleClick", data);
+		};
 		return {
 			...toRefs(state),
 			isDragging: ref(false),
 			listAdded,
+			handleClick,
 		};
 	},
 };
@@ -80,8 +85,6 @@ export default {
 
 <style lang="less" scoped>
 .list-group {
-	width: 100%;
-	min-height: 100%;
 }
 .flip-list-move {
 	transition: all 0.5s;
