@@ -1,5 +1,10 @@
 <template>
-	<el-drawer title="模板配置" v-model="visible" v-bind="$attrs" :before-close="beforeClose">
+	<el-drawer
+		title="模板配置"
+		v-model="visible"
+		v-bind="$attrs"
+		:before-close="beforeClose"
+	>
 		<div class="template-config">
 			<el-form label-width="100px" label-position="left">
 				<el-form-item
@@ -48,28 +53,81 @@
 							>{{ i.label }}</el-radio
 						>
 					</el-radio-group>
-					<div class="select-config" v-else-if="item.type === 'select-config'">
+					<div
+						class="select-config"
+						v-else-if="item.type === 'select-config'"
+					>
 						<ul class="select-config-list">
-							<li class="select-config-item" v-for="(element, i) of item.value" :key="i">
-								<el-input v-model="element.label" placeholder="字段" class="input"></el-input>
-								<el-input v-model="element.value" placeholder="真实值" class="input"></el-input>
-								<div class="bt-delete" @click="item.value.splice(i, 1)"><i class="el-icon-delete"></i></div>
+							<li
+								class="select-config-item"
+								v-for="(element, i) of item.value"
+								:key="i"
+							>
+								<el-input
+									v-model="element.label"
+									placeholder="字段"
+									class="input"
+								></el-input>
+								<el-input
+									v-model="element.value"
+									placeholder="真实值"
+									class="input"
+								></el-input>
+								<div
+									class="bt-delete"
+									@click="item.value.splice(i, 1)"
+								>
+									<i class="el-icon-delete"></i>
+								</div>
 							</li>
 							<li class="select-config-item">
-								<el-button type="primary" @click="item.value.push({ label: '', value: '' })">新增</el-button>
+								<el-button
+									type="primary"
+									@click="
+										item.value.push({
+											label: '',
+											value: '',
+										})
+									"
+									>新增</el-button
+								>
 							</li>
 						</ul>
 					</div>
-					<div class="table-config" v-else-if="item.type === 'table-config'">
+					<div
+						class="table-config"
+						v-else-if="item.type === 'table-config'"
+					>
 						<ul class="table-config-list">
-							<li class="table-config-item" v-for="(element, i) of item.value" :key="i">
-								<el-input v-model="element.label" placeholder="表头" class="input"></el-input>
-								<el-input v-model="element.value" placeholder="列字段" class="input"></el-input>
-								<el-input v-model="element.width" placeholder="列宽(数字或空)" type="number"></el-input>
-								<div class="bt-delete" @click="item.value.splice(i, 1)"><i class="el-icon-delete"></i></div>
+							<li
+								class="table-config-item"
+								v-for="(element, i) of item.value"
+								:key="i"
+							>
+								<el-input
+									v-model="element.label"
+									placeholder="列头"
+									class="input"
+								></el-input>
+								<div
+									class="bt-delete"
+									@click="item.value.splice(i, 1)"
+								>
+									<i class="el-icon-delete"></i>
+								</div>
 							</li>
 							<li class="table-config-item">
-								<el-button type="primary" @click="item.value.push({ label: '', value: '', width: '' })">新增列</el-button>
+								<el-button
+									type="primary"
+									@click="
+										item.value.push({
+											label: '',
+											value: '',
+											width: '',
+										})
+									"
+									>新增列</el-button
+								>
 							</li>
 						</ul>
 					</div>
@@ -86,7 +144,7 @@
 
 <script>
 import { computed } from "vue";
-import {ElMessage} from 'element-plus'
+import { ElMessage } from "element-plus";
 export default {
 	name: "ModuleConfigDrawer",
 	inheritAttrs: false,
@@ -115,18 +173,22 @@ export default {
 			},
 		});
 		const beforeClose = (done) => {
-			if (document.getElementsByClassName('select-config').length > 0) {
-				const options = list.value.find(item => item.type === 'select-config').value;
-				if (options.find(i => i.label === '' || i.value === '')) {
-					ElMessage.info('有字段未填写完整');
-					return
+			if (document.getElementsByClassName("select-config").length > 0) {
+				const options = list.value.find(
+					(item) => item.type === "select-config"
+				).value;
+				if (options.find((i) => i.label === "" || i.value === "")) {
+					ElMessage.info("有字段未填写完整");
+					return;
 				}
 			}
-			if (document.getElementsByClassName('table-config').length > 0) {
-				const options = list.value.find(item => item.type === 'table-config').value;
-				if (options.find(i => i.label === '' || i.value === '')) {
-					ElMessage.info('有字段未填写完整');
-					return
+			if (document.getElementsByClassName("table-config").length > 0) {
+				const options = list.value.find(
+					(item) => item.type === "table-config"
+				).value;
+				if (options.find((i) => i.label === "" || i.value === "")) {
+					ElMessage.info("有字段未填写完整");
+					return;
 				}
 			}
 			done();
@@ -181,7 +243,6 @@ export default {
 		}
 	}
 	.table-config {
-
 	}
 }
 :deep(.el-input, .el-input__inner) {

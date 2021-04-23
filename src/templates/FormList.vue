@@ -83,8 +83,7 @@
 			</div>
 		</div>
 		<el-dialog title="模板预览" v-model="previewVisible" center width="90%">
-			<!-- <div id="template-preview"></div> -->
-			<form-list-final></form-list-final>
+			<demo-preview> </demo-preview>
 		</el-dialog>
 	</div>
 	<module-config-drawer
@@ -138,8 +137,8 @@ export default {
 				.tConfig,
 			tableConfigList: [
 				{
-					label: "列字段",
-					value: [{ label: "", value: "", width: "" }],
+					label: "列名",
+					value: [{ label: "" }],
 					type: "table-config",
 				},
 			],

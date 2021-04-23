@@ -4,22 +4,10 @@ export default [
 		value: "formList",
 		list: ["tInput", "tDatePicker", "tSelect"],
 		tConfig: [
-			{ label: "数据查询接口", value: "" },
 			{
 				label: "页头",
 				value: "分析页面",
 			},
-			// {
-			// 	label: "布局",
-			// 	value: "自适应",
-			// 	type: "select",
-			// 	options: [
-			// 		{ label: "三列", value: 3 },
-			// 		{ label: "四列", value: 4 },
-			// 		{ label: "五列", value: 5 },
-			// 		{ label: "自适应", value: "自适应" },
-			// 	],
-			// },
 			{
 				label: "前置图标",
 				type: "image",
@@ -35,15 +23,6 @@ export default [
 					{ label: "不需要", value: false },
 				],
 			},
-			// {
-			// 	label: "上下分开",
-			// 	value: false,
-			// 	type: "radio",
-			// 	options: [
-			// 		{ label: "分开", value: true },
-			// 		{ label: "合并", value: false },
-			// 	],
-			// },
 		],
 		options: [],
 	},
