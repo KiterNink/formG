@@ -83,7 +83,7 @@
 			</div>
 		</div>
 		<el-dialog title="模板预览" v-model="previewVisible" center width="90%">
-			<demo-preview> </demo-preview>
+			<div id="preview"></div>
 		</el-dialog>
 	</div>
 	<module-config-drawer
@@ -99,18 +99,24 @@
 </template>
 
 <script>
-import { computed, inject, reactive, toRefs, watch } from "vue";
+import {
+	computed,
+	inject,
+	reactive,
+	toRefs,
+	watch,
+	createApp,
+} from "vue";
 import templates from "@/assets/material/templates";
 import CustomDrag from "@/modules/CustomDrag.vue";
 import ModuleConfigDrawer from "@/modules/ModuleConfigDrawer.vue";
-import FormListFinal from "@/templates/FormListFinal.vue";
 import { copyObj } from "../utils/tools";
+import { parse } from "@vue/compiler-sfc";
 export default {
 	name: "FormList",
 	components: {
 		CustomDrag,
-		ModuleConfigDrawer,
-		FormListFinal,
+		ModuleConfigDrawer
 	},
 	setup() {
 		const state = reactive({
@@ -167,6 +173,8 @@ export default {
 		watch(moreClick.value, (val) => {
 			state.pageConfigVisible = true;
 		});
+		const codes = `<template><h1>是的呀</h1></template>`;
+		console.log(parse(codes));
 		return {
 			...toRefs(state),
 			setUniqId,

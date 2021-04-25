@@ -4,8 +4,5 @@ import router from "./routes/index";
 import elementPlus from "element-plus";
 import "element-plus/lib/theme-chalk/index.css";
 import "./assets/style/CommonStyle.less";
-import "vite-plugin-vuedoc/style.css";
-import DemoPreview from "./modules/DemoPreview.vue";
 const app = createApp(App);
-app.component("DemoPreview", DemoPreview);
 app.use(router).use(elementPlus).mount("#app");
