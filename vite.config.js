@@ -5,19 +5,13 @@ import { resolve } from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
 	server: {
-		port: 1000
+		port: 8066,
 	},
-	mode: 'development',
-	plugins: [
-		vue(),
-	],
+	plugins: [vue()],
 	resolve: {
 		alias: {
-			vue: "vue/dist/vue.runtime.esm-browser.js",
+			vue: "vue/dist/vue.esm-bundler.js",
 			"@": resolve(__dirname, "./src"),
 		},
 	},
-	optimizeDeps: {
-		exclude: ['consolidate']
-	  }
 });

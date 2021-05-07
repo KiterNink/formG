@@ -11,13 +11,14 @@
     "element-plus": "^1.0.2-beta.32",
     "less": "^4.1.1",
     "less-loader": "^8.0.0",
-    "vue": "^3.0.5",
+    "vue": "^3.0.11",
     "vue-router": "^4.0.4",
+    "vue3-sfc-loader": "^0.7.3",
     "vuedraggable": "^4.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.1.4",
-    "vite": "^2.0.1",
-    "@vue/compiler-sfc": "^3.0.5"
+    "@vue/compiler-sfc": "^3.0.11",
+    "vite": "^2.2.3"
   }
 }

@@ -19,12 +19,12 @@
 </template>
 
 <script>
-import FormList from "@/templates/FormList.vue";
+import FormList from "../templates/FormList.vue";
 import { reactive, toRefs } from "vue";
 import { useRoute } from "vue-router";
-import modules from "@/assets/material/modules";
-import templates from "@/assets/material/templates";
-import CustomDrag from "@/modules/CustomDrag.vue";
+import modules from "../assets/material/modules";
+import templates from "../assets/material/templates";
+import CustomDrag from "../modules/CustomDrag.vue";
 import { tInput, tDatePicker, tSelect } from "../components/index";
 export default {
 	components: {

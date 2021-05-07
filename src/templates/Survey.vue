@@ -33,14 +33,14 @@
 <script>
 import { computed, reactive, toRefs, inject, watch } from "vue";
 import { useRouter } from "vue-router";
-import CustomDrag from "@/modules/CustomDrag.vue";
+import CustomDrag from "../modules/CustomDrag.vue";
 export default {
 	name: "survey",
 	components: { CustomDrag },
 	setup(props, vm) {
 		const router = useRouter();
 		const configList = inject("configList");
-		if (configList.value.length === 0) {
+		if (configList.value.length === 0) { 
 			router.replace("/");
 		}
 		const state = reactive({

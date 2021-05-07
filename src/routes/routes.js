@@ -1,8 +1,6 @@
 import Config from "../pages/Config.vue";
-// import FormList from "@/templates/FormList.vue";
-// import Survey from "@/templates/Survey.vue";
 import Index from "../pages/index.vue";
-import Manage from "@/pages/Manage.vue";
+import Manage from "../pages/Manage.vue";
 export const routes = [
 	{
 		name: "index",
