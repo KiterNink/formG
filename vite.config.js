@@ -6,9 +6,7 @@ import { resolve } from "path";
 export default defineConfig({
 	server: {
 		port: 8066,
-		proxy: {
-			form: "http://192.168.2.210:16800/",
-		},
+		hmr: false,
 	},
 	plugins: [vue()],
 	resolve: {
