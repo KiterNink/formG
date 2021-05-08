@@ -59,12 +59,13 @@ import { reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
 import imgFormList from "../assets/img/img-form-list.png";
 import imgSurveyBanner from "../assets/img/survey/banner.png";
+import { getTemplates } from "../api/templates";
 export default {
 	name: "TemplateManage",
 	setup() {
 		const router = useRouter();
 		const state = reactive({
-			pageList: [{ name: "中国中科院院士表", id: 1 }],
+			pageList: [],
 			visible: false,
 			templateList: [
 				{
@@ -95,12 +96,21 @@ export default {
 		const goConfig = () => {
 			router.push({ name: "config", query: { template: state.tlte } });
 		};
+		const getData = () => {
+			const params = {};
+			getTemplates(params).then((res) => {
+				console.log(res);
+				state.pageList = res.list;
+			});
+		};
+		getData();
 		return {
 			...toRefs(state),
 			handlePage,
 			addPage,
 			closeDialog,
 			goConfig,
+			getData,
 		};
 	},
 };
@@ -120,6 +130,7 @@ h1 {
 			width: 230px;
 			height: 140px;
 			margin-right: 10px;
+			margin-bottom: 10px;
 			background: #fff;
 			border-radius: 4px;
 			cursor: pointer;

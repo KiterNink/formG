@@ -7,6 +7,7 @@
 			<i>青塔出品</i>
 		</div>
 		<div class="right">
+			<el-button type="primary" size="mini" @click="save">保存</el-button>
 			<el-button type="text" @click="preview" class="bt-preview"
 				>预览</el-button
 			>
@@ -36,6 +37,7 @@ export default {
 		return {
 			moreClick: { value: computed(() => this.moreClick) },
 			previewClick: { value: computed(() => this.previewClick) },
+			saveClick: { value: computed(() => this.saveClick) }
 		};
 	},
 	setup() {
@@ -43,6 +45,7 @@ export default {
 			userName: "kiter",
 			moreClick: 0,
 			previewClick: 0,
+			saveClick: 0
 		});
 		const clickMore = () => {
 			state.moreClick++;
@@ -50,12 +53,16 @@ export default {
 		const preview = () => {
 			state.previewClick++;
 		};
+		const save = () => {
+			state.saveClick++;
+		};
 		return {
 			...toRefs(state),
 			preview,
 			clickMore,
+			save
 		};
-	},
+	}
 };
 </script>
 

@@ -83,7 +83,6 @@
 			</div>
 		</div>
 		<el-dialog title="模板预览" v-model="previewVisible" center width="90%">
-			<preview-demo :codes="codes"></preview-demo>
 		</el-dialog>
 	</div>
 	<module-config-drawer
@@ -104,6 +103,8 @@ import templates from "../assets/material/templates";
 import CustomDrag from "../modules/CustomDrag.vue";
 import ModuleConfigDrawer from "../modules/ModuleConfigDrawer.vue";
 import { copyObj } from "../utils/tools";
+import { updateTemplate } from "../api/templates";
+import { ElMessage } from "element-plus";
 export default {
 	name: "FormList",
 	components: {
@@ -160,6 +161,7 @@ export default {
 			state.moduleConfigVisible = true;
 		};
 		const previewClick = inject("previewClick");
+		const saveClick = inject("saveClick");
 		const generateCodes = () => {
 			const codes = `
 			<template>
@@ -406,6 +408,24 @@ export default {
 		});
 		watch(moreClick.value, (val) => {
 			state.pageConfigVisible = true;
+		});
+		watch(saveClick.value, (val) => {
+			const params = {
+				vue: generateCodes(),
+				config: {
+					page: state.pageConfig,
+					table: state.tableConfig,
+					formList: state.formList,
+				},
+				name: "模板",
+			};
+			updateTemplate(params)
+				.then((res) => {
+					ElMessage.success("保存成功");
+				})
+				.catch(() => {
+					ElMessage.error("保存失败");
+				});
 		});
 		return {
 			...toRefs(state),
