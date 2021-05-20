@@ -2,7 +2,8 @@ import Config from "../pages/Config.vue";
 import Index from "../pages/index.vue";
 import Manage from "../pages/Manage.vue";
 import PageMain from "@/pages/PageMain.vue";
-import Database from "@/pages/Database.vue";
+import Database from "@/pages/Database/index.vue";
+import Excel from "@/pages/Excel.vue";
 export const routes = [
 	{
 		name: "index",
@@ -24,6 +25,11 @@ export const routes = [
 				name: "pageMain",
 				path: "pagemain",
 				component: PageMain,
+			},
+			{
+				name: "Excel",
+				path: "excel",
+				component: Excel,
 			},
 			{
 				name: "database",

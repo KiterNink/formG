@@ -1,11 +1,8 @@
 <template>
 	<div class="table-top">
-		<el-form label-width="50px" inline label-position="left">
+		<el-form label-width="80px" inline label-position="left">
 			<el-form-item label="表名">
 				<el-input v-model="config.tableName" size="small"></el-input>
-			</el-form-item>
-			<el-form-item label="数据项">
-				<p>导入{{ config.total }}条, {{ config.columnTotal }}列</p>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -23,16 +20,16 @@
 				</tr>
 				<tr>
 					<td class="td-label">字段类型</td>
-					<td v-for="(type, index) of config.typeValues" :key="index">
+					<td v-for="(type, index) of config.typeList" :key="index">
 						<el-select
-							v-model="config.typeValues[index]"
+							v-model="config.typeList[index]"
 							size="small"
 						>
 							<el-option
 								v-for="item of typeList"
 								:key="item.value"
 								:label="item.label"
-								:value="item.vlue"
+								:value="item.value"
 							>
 							</el-option>
 						</el-select>
@@ -55,17 +52,17 @@ import { getTypeList } from "../api/templates";
 export default {
 	name: "ExcelPreview",
 	props: {
-		config: Object,
+		excelConfig: Object,
 	},
 	setup(props, vm) {
 		const state = reactive({
-			typeList: [{ label: "", value: "" }],
+			typeList: [],
 			config: computed({
 				get: () => {
 					return vm.attrs.modelValue;
 				},
 				set: (val) => {
-					vm.emit("update:config", val);
+					vm.emit("update:excelConfig", val);
 				},
 			}),
 		});
@@ -84,28 +81,40 @@ export default {
 
 <style lang="less" scoped>
 .table-wrap {
+	// table,
+	// thead,
+	// tbody,
+	// tr,
+	// td {
+	// 	padding: 0;
+	// 	margin: 0;
+	// }
 	table {
-		tbody {
-			max-height: 400px;
-			overflow-y: auto;
-		}
-		tr {
-			&:first-child {
-				td {
-					border-top: solid 1px #e2e2e2;
-				}
-			}
-		}
-		td {
-			border-bottom: solid 1px #e2e2e2;
-			border-right: solid 1px #e2e2e2;
-			text-align: center;
+		thead tr td {
 			&.td-label {
 				width: 80px;
 				font-weight: 500;
 			}
-			&:first-child {
-				border-left: solid 1px #e2e2e2;
+		}
+		tbody {
+			max-height: 400px;
+			overflow-y: auto;
+			tr {
+				&:first-child {
+					td {
+						border-top: solid 1px #e2e2e2;
+					}
+				}
+			}
+			td {
+				border-bottom: solid 1px #e2e2e2;
+				border-right: solid 1px #e2e2e2;
+				text-align: center;
+				padding: 0 7px;
+
+				&:first-child {
+					border-left: solid 1px #e2e2e2;
+				}
 			}
 		}
 	}

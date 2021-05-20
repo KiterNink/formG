@@ -1,5 +1,5 @@
 import { post } from "./index";
-const baseurl = "form/base/";
+const baseurl = "form/formdata/";
 // 更新模板
 export const updateTemplate = (params) => {
 	return post(baseurl + "save_template/", params);
@@ -14,12 +14,7 @@ export const postExcel = (params) => {
 };
 // 保存excel配置
 export const saveConfig = (params) => {
-	return post(baseurl + "/", params);
-};
-
-// 获取所有数据页
-export const getDatabaseList = (params) => {
-	return post(baseurl + "/", params);
+	return post(baseurl + "creat-form/", params, "formdata");
 };
 
 // 获取所有的字段类型

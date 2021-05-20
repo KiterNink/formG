@@ -21,7 +21,6 @@
 
 <script>
 import FormList from "../templates/FormList.vue";
-import Excel from "../templates/Excel.vue";
 import { reactive, toRefs } from "vue";
 import { useRoute } from "vue-router";
 import modules from "../utils/material/modules";
@@ -31,7 +30,6 @@ import { tInput, tDatePicker, tSelect } from "../components/index";
 export default {
 	components: {
 		FormList,
-		Excel,
 		CustomDrag,
 		tSelect,
 		tInput,

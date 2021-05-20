@@ -83,7 +83,7 @@ export default {
 				},
 				{
 					label: "从Excel创建",
-					value: "excel",
+					value: "Excel",
 					img: imgExcel,
 				},
 			],
@@ -112,7 +112,7 @@ export default {
 			// });
 		};
 		const addDatabase = () => {
-			router.push({ name: "config", query: { template: "Excel" } });
+			router.push({ name: "Excel" });
 		};
 		getData();
 		return {
@@ -146,7 +146,6 @@ h1 {
 			background: #fff;
 			border-radius: 4px;
 			cursor: pointer;
-			box-shadow: 0 0 1px 0 #666;
 			&:hover {
 				box-shadow: 0 0 10px 0 #999;
 			}
@@ -154,12 +153,9 @@ h1 {
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				// border: 1px dashed #dcdfe6;
-				// box-shadow: none;
 				background: url("../assets/img/icon-empty.png") no-repeat;
 			}
 			&.add-database {
-				// box-shadow: none;
 				background: url("../assets/img/icon-excel.png") no-repeat;
 			}
 			&-center {
