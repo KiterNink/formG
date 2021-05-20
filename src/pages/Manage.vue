@@ -2,9 +2,16 @@
 	<h1>模板管理</h1>
 	<div class="template-manage-wrap">
 		<ul class="template-list">
-			<li class="template-item add-template" @click="addPage">
-				添加模板
-			</li>
+			<el-tooltip effect="light" content="新增数据" placement="top">
+				<li class="template-item add-database" @click="addDatabase">
+					<!-- 添加数据 -->
+				</li>
+			</el-tooltip>
+			<el-tooltip effect="light" content="新增模板" placement="top">
+				<li class="template-item add-template" @click="addPage">
+					<!-- 添加模板 -->
+				</li>
+			</el-tooltip>
 			<li
 				class="template-item"
 				v-for="(item, index) of pageList"
@@ -29,11 +36,12 @@
 			</li>
 		</ul>
 	</div>
-	<el-dialog
+	<!-- <el-dialog
 		v-model="visible"
-		title="初始化"
+		title="新建表单"
 		center
 		@close="closeDialog"
+		width="50%"
 		:close-on-click-modal="false"
 	>
 		<el-radio-group v-model="tlte">
@@ -51,14 +59,14 @@
 			>
 			<el-button type="primary" @click="goConfig">确定</el-button>
 		</template>
-	</el-dialog>
+	</el-dialog> -->
 </template>
 
 <script>
 import { reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
-import imgFormList from "../assets/img/img-form-list.png";
-import imgSurveyBanner from "../assets/img/survey/banner.png";
+import imgExcel from "../assets/img/icon-excel.png";
+import imgEmpty from "../assets/img/icon-empty.png";
 import { getTemplates } from "../api/templates";
 export default {
 	name: "TemplateManage",
@@ -69,20 +77,21 @@ export default {
 			visible: false,
 			templateList: [
 				{
-					label: "过滤搜索",
-					value: "formList",
-					img: imgFormList,
+					label: "空白表单",
+					value: "FormList",
+					img: imgEmpty,
 				},
 				{
-					label: "调查问卷",
-					value: "survey",
-					img: imgSurveyBanner,
+					label: "从Excel创建",
+					value: "excel",
+					img: imgExcel,
 				},
 			],
-			tlte: "formList",
+			tlte: "FormList",
 		});
 		const addPage = () => {
-			state.visible = true;
+			// state.visible = true;
+			router.push({ name: "config", query: { template: "FormList" } });
 		};
 		const handlePage = (type, id) => {
 			// if (type === "view") {
@@ -97,11 +106,13 @@ export default {
 			router.push({ name: "config", query: { template: state.tlte } });
 		};
 		const getData = () => {
-			const params = {};
-			getTemplates(params).then((res) => {
-				console.log(res);
-				state.pageList = res.list;
-			});
+			// const params = {};
+			// getTemplates(params).then((res) => {
+			// 	state.pageList = res.list;
+			// });
+		};
+		const addDatabase = () => {
+			router.push({ name: "config", query: { template: "Excel" } });
 		};
 		getData();
 		return {
@@ -111,6 +122,7 @@ export default {
 			closeDialog,
 			goConfig,
 			getData,
+			addDatabase,
 		};
 	},
 };
@@ -127,7 +139,7 @@ h1 {
 		align-items: center;
 		flex-wrap: wrap;
 		.template-item {
-			width: 230px;
+			width: 140px;
 			height: 140px;
 			margin-right: 10px;
 			margin-bottom: 10px;
@@ -139,12 +151,16 @@ h1 {
 				box-shadow: 0 0 10px 0 #999;
 			}
 			&.add-template {
-				background: #f5f7fa;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				border: 1px dashed #dcdfe6;
-				box-shadow: none;
+				// border: 1px dashed #dcdfe6;
+				// box-shadow: none;
+				background: url("../assets/img/icon-empty.png") no-repeat;
+			}
+			&.add-database {
+				// box-shadow: none;
+				background: url("../assets/img/icon-excel.png") no-repeat;
 			}
 			&-center {
 				background: #3e74ff;
@@ -180,8 +196,8 @@ h1 {
 	}
 }
 .template-img {
-	width: 200px;
-	height: 150px;
+	width: 70px;
+	height: 70px;
 	object-fit: cover;
 	margin-top: 10px;
 }

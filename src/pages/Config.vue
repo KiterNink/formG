@@ -1,3 +1,4 @@
+<!--配置模板的页面-->
 <template>
 	<div class="config-container">
 		<custom-drag
@@ -20,19 +21,21 @@
 
 <script>
 import FormList from "../templates/FormList.vue";
+import Excel from "../templates/Excel.vue";
 import { reactive, toRefs } from "vue";
 import { useRoute } from "vue-router";
-import modules from "../assets/material/modules";
-import templates from "../assets/material/templates";
+import modules from "../utils/material/modules";
+import templates from "../utils/material/templates";
 import CustomDrag from "../modules/CustomDrag.vue";
 import { tInput, tDatePicker, tSelect } from "../components/index";
 export default {
 	components: {
 		FormList,
+		Excel,
 		CustomDrag,
 		tSelect,
 		tInput,
-		tDatePicker
+		tDatePicker,
 	},
 	setup() {
 		const route = useRoute();
@@ -42,13 +45,13 @@ export default {
 		});
 		state.activeCom = route.query.template;
 		const list = templates.find(
-			(item) => (item.value = route.query.template)
+			(item) => item.value === route.query.template
 		).list;
 		state.moduleList = list.map((i) =>
 			modules.find((item) => item.name === i)
 		);
 		return {
-			...toRefs(state)
+			...toRefs(state),
 		};
 	},
 };

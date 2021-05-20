@@ -6,7 +6,7 @@ import { resolve } from "path";
 export default defineConfig({
 	server: {
 		port: 8066,
-		hmr: false,
+		// hmr: false,
 	},
 	plugins: [vue()],
 	resolve: {
