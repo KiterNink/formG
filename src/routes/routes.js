@@ -22,7 +22,7 @@ export const routes = [
 				component: Config,
 			},
 			{
-				name: "pageMain",
+				name: "PageMain",
 				path: "pagemain",
 				component: PageMain,
 			},
@@ -32,7 +32,7 @@ export const routes = [
 				component: Excel,
 			},
 			{
-				name: "database",
+				name: "Database",
 				path: "database",
 				component: Database,
 			},

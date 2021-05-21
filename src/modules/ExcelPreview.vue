@@ -111,6 +111,7 @@ export default {
 				border-right: solid 1px #e2e2e2;
 				text-align: center;
 				padding: 0 7px;
+				min-width: 100px;
 
 				&:first-child {
 					border-left: solid 1px #e2e2e2;

@@ -23,17 +23,17 @@
 import FormList from "../templates/FormList.vue";
 import { reactive, toRefs } from "vue";
 import { useRoute } from "vue-router";
-import modules from "../utils/material/modules";
-import templates from "../utils/material/templates";
+import modules from "../material/modules";
+import templates from "../material/templates";
 import CustomDrag from "../modules/CustomDrag.vue";
-import { tInput, tDatePicker, tSelect } from "../components/index";
+import { DemoInput, DemoDatePicker, DemoSelect } from "../components/index";
 export default {
 	components: {
 		FormList,
 		CustomDrag,
-		tSelect,
-		tInput,
-		tDatePicker,
+		DemoSelect,
+		DemoInput,
+		DemoDatePicker,
 	},
 	setup() {
 		const route = useRoute();

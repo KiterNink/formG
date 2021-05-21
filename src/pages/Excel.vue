@@ -1,55 +1,76 @@
 <template>
-	<div class="excel-container">
-		<el-steps :active="currentStep" finish-status="success">
-			<el-step title="导入excel"></el-step>
-			<el-step title="配置字段"></el-step>
-		</el-steps>
-
-		<el-upload
-			class="upload-excel"
-			drag
-			action="/form/formdata/upload-excel/"
-			v-if="currentStep === 0"
-			:form-list="excelFile"
-			:on-success="uploadSuccess"
-			:on-error="uploadError"
-			accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-			ref="upload"
+	<div class="container">
+		<el-dialog
+			title="Excel导入"
+			v-model="visible"
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			@close="closeDialog"
+			custom-class="dialog"
+			width="80%"
 		>
-			<i class="el-icon-upload"></i>
-			<div class="el-upload__text">
-				将文件拖到此处，或<em>点击上传</em>
+			<div class="excel-container">
+				<el-steps
+					class="steps-wrap"
+					:active="currentStep"
+					finish-status="success"
+				>
+					<el-step title="导入excel"></el-step>
+					<el-step title="配置字段"></el-step>
+				</el-steps>
+
+				<el-upload
+					class="upload-excel"
+					drag
+					action="/form/formdata/upload-excel/"
+					v-if="currentStep === 0"
+					:form-list="excelFile"
+					:on-success="uploadSuccess"
+					:on-error="uploadError"
+					accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+					ref="upload"
+				>
+					<i class="el-icon-upload"></i>
+					<div class="el-upload__text">
+						将文件拖到此处，或<em>点击上传</em>
+					</div>
+					<template #tip>
+						<div class="el-upload__tip">
+							<span style="color: red">* </span>只能上传excel文件
+						</div>
+					</template>
+				</el-upload>
+				<div class="data-wrap">
+					<excel-preview
+						v-model="excelConfig"
+						ref="preview"
+						v-if="currentStep === 1"
+					></excel-preview>
+				</div>
 			</div>
-			<template #tip>
-				<div class="el-upload__tip">只能上传excel文件</div>
+			<template #footer>
+				<div class="button-group">
+					<el-button
+						type="primary"
+						plain
+						@click="backToPreStep"
+						size="small"
+						v-if="currentStep > 0"
+						>上一步</el-button
+					>
+					<el-button
+						type="primary"
+						@click="saveExcelConfig"
+						size="small"
+						v-if="currentStep === 1"
+						:loading="importLoading"
+						>导入</el-button
+					>
+				</div>
 			</template>
-		</el-upload>
-		<div class="data-wrap">
-			<excel-preview
-				v-model="excelConfig"
-				ref="preview"
-				v-if="currentStep === 1"
-			></excel-preview>
-		</div>
-		<div class="button-group">
-			<el-button
-				type="primary"
-				plain
-				@click="backToPreStep"
-				size="small"
-				v-if="currentStep > 0"
-				>上一步</el-button
-			>
-			<el-button
-				type="primary"
-				@click="saveExcelConfig"
-				size="small"
-				v-if="currentStep === 1"
-				:loading="importLoading"
-				>导入</el-button
-			>
-		</div>
+		</el-dialog>
 	</div>
+
 	<!-- <el-dialog title="提示" v-model="visible">
 		<div class="result-wrap" v-if="!status">
 			<el-result
@@ -73,6 +94,7 @@ import { reactive, toRefs } from "vue";
 import { saveConfig } from "../api/templates";
 import { ElMessage as Message } from "element-plus";
 import ExcelPreview from "@/modules/ExcelPreview.vue";
+import { useRouter } from "vue-router";
 export default {
 	name: "Excel",
 	components: {
@@ -83,10 +105,11 @@ export default {
 			currentStep: 0,
 			excelFile: [],
 			excelConfig: {},
-			visible: false,
+			visible: true,
 			formConfig: [],
 			importLoading: false,
 		});
+		const Router = useRouter();
 		const uploadSuccess = (response, file) => {
 			state.excelConfig = response.data;
 			state.excelFile = [file];
@@ -116,14 +139,19 @@ export default {
 				.then((res) => {
 					// state.formConfig = res.form;
 					state.importLoading = false;
+					Message.success("导入成功");
+					Router.push({ name: "Database" });
 				})
-				.catch(() => {
-					Message.error("导入失败");
+				.catch((e) => {
+					Message.error(`导入失败${e.data}`);
 					state.importLoading = false;
 				});
 		};
 		const configForm = () => {
 			state.status = true;
+		};
+		const closeDialog = () => {
+			Router.push({ name: "index" });
 		};
 		return {
 			...toRefs(state),
@@ -132,30 +160,41 @@ export default {
 			uploadError,
 			saveExcelConfig,
 			configForm,
+			closeDialog,
 		};
 	},
 };
 </script>
 
 <style lang="less" scoped>
+.container {
+	:deep(.el-dialog) {
+		margin-top: 5vh !important;
+	}
+}
 .excel-container {
-	width: 70%;
-	margin: 40px auto;
-	padding: 20px;
-	background: rgba(240, 240, 240, 0.8);
-}
-:deep(.el-upload) {
 	width: 100%;
-}
-:deep(.el-upload-dragger) {
-	margin: 0 auto;
+	margin: 10px auto;
+	padding: 20px;
+	.upload-excel {
+		width: 100%;
+		:deep(.el-upload) {
+			width: 100%;
+		}
+		:deep(.el-upload-dragger) {
+			margin: 0 auto;
+		}
+	}
 }
 .button-group {
 	padding: 15px 0;
 	text-align: right;
 }
 .data-wrap {
-	max-height: 500px;
+	max-height: 400px;
 	overflow-y: auto;
+}
+.steps-wrap {
+	margin-bottom: 20px;
 }
 </style>

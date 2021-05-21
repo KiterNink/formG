@@ -1,6 +1,6 @@
 export default [
 	{
-		name: "tInput",
+		name: "DemoInput",
 		label: "输入框",
 		prop: "el-input",
 		config: [
@@ -36,7 +36,7 @@ export default [
 		],
 	},
 	{
-		name: "tDatePicker",
+		name: "DemoDatePicker",
 		label: "日期选择器",
 		prop: "el-date-picker",
 		config: [
@@ -72,7 +72,7 @@ export default [
 		],
 	},
 	{
-		name: "tSelect",
+		name: "DemoSelect",
 		label: "下拉框",
 		prop: "el-select",
 		config: [

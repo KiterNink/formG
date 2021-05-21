@@ -14,10 +14,10 @@
 			>
 		</div>
 		<div class="right">
-			<el-button type="primary" size="mini" @click="save">保存</el-button>
+			<!-- <el-button type="primary" size="mini" @click="save">保存</el-button>
 			<el-button type="text" @click="preview" class="bt-preview"
 				>预览</el-button
-			>
+			> -->
 			<el-dropdown trigger="click">
 				<span class="user-name">
 					{{ userName
@@ -58,8 +58,8 @@ export default {
 			saveClick: 0,
 			routes: [
 				{ label: "首页", value: "index" },
-				{ label: "数据中心", value: "database" },
-				{ label: "页面内容", value: "pageMain" },
+				{ label: "数据中心", value: "Database" },
+				{ label: "页面内容", value: "PageMain" },
 			],
 		});
 		const clickMore = () => {
@@ -103,8 +103,13 @@ export default {
 	}
 	.bt-routechange {
 		margin-right: 10px;
+		cursor: pointer;
 		&.active {
 			color: #3e74ffdd;
+		}
+		&:hover {
+			color: #3e74ffdd;
+			transform: scale(1.2);
 		}
 	}
 }

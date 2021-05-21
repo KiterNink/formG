@@ -2,7 +2,7 @@ export default [
 	{
 		label: "空白表单",
 		value: "FormList",
-		list: ["tInput", "tDatePicker", "tSelect"],
+		list: ["DemoInput", "DemoDatePicker", "DemoSelect"],
 		// list: [],
 		tConfig: [
 			{
@@ -26,19 +26,6 @@ export default [
 		],
 		options: [],
 	},
-	// {
-	// 	label: "问卷调查",
-	// 	value: "survey",
-	// 	list: ["tInput"],
-	// 	tConfig: [
-	// 		{ label: "标题", value: "问卷调查" },
-	// 		{
-	// 			label: "描述",
-	// 			value: "为了更好的满足客户需求,进行以下问卷调查,请认真填写内容",
-	// 		},
-	// 		{ label: "头部海报", value: "", type: "image" },
-	// 	],
-	// },
 	{
 		label: "导入Excel",
 		value: "Excel",

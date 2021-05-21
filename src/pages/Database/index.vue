@@ -5,6 +5,8 @@
 				:default-active="menuOpenIndex"
 				mode="horizontal"
 				@select="menuSelect"
+				class="menu"
+				v-if="menuList.length"
 			>
 				<el-menu-item
 					:index="item.id"
@@ -13,9 +15,17 @@
 					>{{ item.name }}</el-menu-item
 				>
 			</el-menu>
+			<el-empty v-else></el-empty>
 		</el-aside>
 		<el-main>
-			<component :is="componentName" :id="menuOpenIndex"></component>
+			<component
+				:is="componentName"
+				:id="menuOpenIndex"
+				v-if="menuList.length"
+			>
+				0</component
+			>
+			<el-empty v-else></el-empty>
 		</el-main>
 	</el-container>
 </template>
@@ -40,7 +50,9 @@ export default {
 		const getMenuList = () => {
 			getDatabaseList({}).then((res) => {
 				state.menuList = res.list;
-				state.menuOpenIndex = res.list[0].id;
+				if (res.list.length > 0) {
+					state.menuOpenIndex = res.list[0].id;
+				}
 			});
 		};
 		const menuSelect = (index) => {
@@ -61,5 +73,12 @@ export default {
 <style lang="less" scoped>
 .container {
 	height: 100%;
+	padding: 10px 40px;
+	.menu {
+		height: 100%;
+		.el-menu-item {
+			float: none;
+		}
+	}
 }
 </style>

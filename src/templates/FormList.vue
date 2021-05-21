@@ -109,7 +109,7 @@ import {
 	defineAsyncComponent,
 	nextTick,
 } from "vue";
-import templates from "../utils/material/templates";
+import templates from "../material/templates";
 import CustomDrag from "../modules/CustomDrag.vue";
 import ModuleConfigDrawer from "../modules/ModuleConfigDrawer.vue";
 import { copyObj } from "../utils/tools";

@@ -46,7 +46,7 @@
 					</p>
 				</div>
 				<div class="right">
-					<div class="bt-import"></div>
+					<!-- <div class="bt-import"></div>
 					<div class="bt-export">
 						<img
 							src="../../assets/img/icon-export.png"
@@ -54,7 +54,7 @@
 							class="icon-export"
 						/>
 						<p>导出数据</p>
-					</div>
+					</div> -->
 				</div>
 			</div>
 			<div class="table-body">
@@ -141,7 +141,7 @@ export default {
 				})
 				.catch(() => {
 					this.loading = false;
-					this.$message.error("服务器错误");
+					this.$message.error("服务器错误获取数据失败");
 				});
 		},
 	},
@@ -155,18 +155,15 @@ export default {
 			list: [],
 			total: 0,
 			loading: false,
-			// pageId: computed({
-			// 	get: () => {
-			// 		return vm.attrs.modelValue;
-			// 	},
-			// 	set: (val) => {
-			// 		vm.emit("update:id", val);
-			// 	},
-			// }),
 		});
 		return {
 			...toRefs(state),
 		};
+	},
+	created() {
+		if (this.id) {
+			this.getData();
+		}
 	},
 };
 </script>
