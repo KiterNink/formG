@@ -15,3 +15,22 @@ export const getTableData = (params) => {
 export const getDatabaseList = (params) => {
 	return post(baseurl + "acquire-template/", params);
 };
+// 编辑数据
+/**
+ *
+ * @param {type} 1:添加一行或多行，每一行以array呈现，2:导入excel
+ * @param {cover} 导入excel时是否覆盖
+ * @param {id} 页面id
+ * @param {list} 数据
+ * @param {file} excel文件
+ * @returns
+ */
+export const uploadData = (params) => {
+	return post(baseurl + "upload-data/", params, "formdata");
+};
+export const modifyTable = (params) => {
+	return post(baseurl + "upload-data/", params);
+};
+export const deleteData = (params) => {
+	return post(baseurl + "delete-data/", params);
+};

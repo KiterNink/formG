@@ -14,7 +14,6 @@
 			class="form-wrap"
 			item-key="id"
 			group="com"
-			@setUniqId="setUniqId"
 			custom-item-class="form-item"
 		>
 			<template #default="{ element }">
@@ -40,7 +39,7 @@ export default {
 	setup(props, vm) {
 		const router = useRouter();
 		const configList = inject("configList");
-		if (configList.value.length === 0) { 
+		if (configList.value.length === 0) {
 			router.replace("/");
 		}
 		const state = reactive({
@@ -55,15 +54,8 @@ export default {
 			state.text = val.find((item) => item.label === "描述").value;
 			state.banner = val.find((item) => item.label === "头部海报").value;
 		});
-		const setUniqId = (index) => {
-			const item = state.formList[index];
-			if (!item.id) {
-				item.id = Date.now();
-			}
-		};
 		return {
 			...toRefs(state),
-			setUniqId,
 		};
 	},
 };

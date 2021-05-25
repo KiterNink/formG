@@ -18,6 +18,7 @@
 			<el-button type="text" @click="preview" class="bt-preview"
 				>预览</el-button
 			> -->
+			<div id="teleport-page-header"></div>
 			<el-dropdown trigger="click">
 				<span class="user-name">
 					{{ userName
@@ -44,8 +45,6 @@ export default {
 	provide() {
 		return {
 			moreClick: { value: computed(() => this.moreClick) },
-			previewClick: { value: computed(() => this.previewClick) },
-			saveClick: { value: computed(() => this.saveClick) },
 		};
 	},
 	setup() {
@@ -54,8 +53,6 @@ export default {
 		const state = reactive({
 			userName: "kiter",
 			moreClick: 0,
-			previewClick: 0,
-			saveClick: 0,
 			routes: [
 				{ label: "首页", value: "index" },
 				{ label: "数据中心", value: "Database" },
@@ -65,12 +62,6 @@ export default {
 		const clickMore = () => {
 			state.moreClick++;
 		};
-		const preview = () => {
-			state.previewClick++;
-		};
-		const save = () => {
-			state.saveClick++;
-		};
 		const routerChange = (rou) => {
 			if (route.name !== rou) {
 				router.push({ name: rou });
@@ -78,9 +69,7 @@ export default {
 		};
 		return {
 			...toRefs(state),
-			preview,
 			clickMore,
-			save,
 			routerChange,
 			route,
 		};
@@ -111,6 +100,9 @@ export default {
 			color: #3e74ffdd;
 			transform: scale(1.2);
 		}
+	}
+	#teleport-page-header {
+		margin: 0 10px;
 	}
 }
 .page-center {

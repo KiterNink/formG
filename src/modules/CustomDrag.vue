@@ -8,7 +8,7 @@
 		:group="group"
 		@start="isDragging = true"
 		@end="isDragging = false"
-		@change="listAdded"
+		:clone="handleClone"
 		:component-data="{
 			tag: tag,
 			type: 'transition-group',
@@ -34,6 +34,7 @@
 <script>
 import draggable from "vuedraggable";
 import { reactive, toRefs, ref, computed } from "vue";
+import { copyObj } from "../utils/tools";
 
 export default {
 	name: "CustomDrag",
@@ -65,19 +66,18 @@ export default {
 				},
 			}),
 		});
-		const listAdded = (e) => {
-			if (e.added) {
-				vm.emit("setUniqId", e.added.newIndex);
-			}
-		};
 		const handleClick = (data) => {
 			vm.emit("handleClick", data);
+		};
+		const handleClone = (element) => {
+			element.id = Date.now();
+			return copyObj(element);
 		};
 		return {
 			...toRefs(state),
 			isDragging: ref(false),
-			listAdded,
 			handleClick,
+			handleClone,
 		};
 	},
 };

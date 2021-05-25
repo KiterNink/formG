@@ -10,13 +10,25 @@ export const post = (url, params, type) => {
 		.post(url, params, config)
 		.then((response) => {
 			if (response && response.data) {
-				return response.data.data;
+				const result = response.data;
+				if (typeof result === "object") {
+					if (result.state === 0) {
+						return result.data;
+					} else {
+						throw result.data;
+					}
+				} else {
+					const disposition = response.headers["content-disposition"];
+					return {
+						data: result,
+						etc: disposition.split("=")[1],
+					};
+				}
 			} else {
-				return response.data;
+				throw result.data;
 			}
 		})
 		.catch((e) => {
 			throw e;
 		});
 };
-export const postFormData = (url, params) => {};

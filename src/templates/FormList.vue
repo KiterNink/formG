@@ -14,14 +14,13 @@
 					custom-class="form-item"
 					item-key="id"
 					group="module"
-					@setUniqId="setUniqId"
 					@handleClick="handleClick"
 				>
 					<template #default="{ element }">
 						<p class="item-label">{{ element.label }}:</p>
 						<div class="item-content">
 							<component
-								:is="element.prop"
+								:is="getComponent(element.prop)"
 								style="width: 170px"
 							></component>
 						</div>
@@ -51,7 +50,7 @@
 					<p>查询结果： 共0条记录， 每页显示20条</p>
 				</div>
 				<div class="right">
-					<div class="bt-export" v-show="exportShow">
+					<div class="bt-export" v-show="hasExport">
 						<img
 							src="../assets/img/icon-export.png"
 							alt=""
@@ -87,15 +86,20 @@
 		</el-dialog>
 	</div>
 	<module-config-drawer
-		v-model:list="moduleConfig"
+		v-model:config="moduleConfig"
 		v-model:visible="moduleConfigVisible"
 		direction="rtl"
+		@beforeClose="beforeModuleConfigClose"
 	></module-config-drawer>
 	<module-config-drawer
-		v-model:list="pageConfig"
+		v-model:config="pageConfig"
 		v-model:visible="pageConfigVisible"
 		direction="ltr"
 	></module-config-drawer>
+	<teleport to="#teleport-page-header">
+		<el-button type="text" @click="saveTemplate">保存</el-button>
+		<el-button type="text" @click="preview">预览</el-button>
+	</teleport>
 </template>
 
 <script>
@@ -113,108 +117,131 @@ import templates from "../material/templates";
 import CustomDrag from "../modules/CustomDrag.vue";
 import ModuleConfigDrawer from "../modules/ModuleConfigDrawer.vue";
 import { copyObj } from "../utils/tools";
-import { updateTemplate } from "../api/templates";
+// import { updateTemplate } from "../api/templates";
 import { ElMessage } from "element-plus";
+import { CommonDemo } from "../material/FormList/index";
+import CommonOptions from "../material/SelectOptionList/Common";
+import generatorConfig from "@/utils/generatorConfig";
+import { previewTemplate } from "../api/templates";
 export default {
 	name: "FormList",
 	components: {
 		CustomDrag,
 		ModuleConfigDrawer,
+		CommonDemo,
 	},
 	setup() {
 		const state = reactive({
-			icon: computed(
-				() =>
-					state.pageConfig.find((item) => item.label === "前置图标")
-						.value
-			),
-			title: computed(
-				() =>
-					state.pageConfig.find((item) => item.label === "页头").value
-			),
-			exportShow: computed(
-				() =>
-					state.pageConfig.find((item) => item.label === "需要导出")
-						.value
-			),
+			icon: computed(() => state.pageConfig.icon.value),
+			title: computed(() => state.pageConfig.title.value),
+			hasExport: computed(() => state.pageConfig.hasExport.value),
 			formList: [],
 			columnList: [],
-			moduleConfig: [],
+			moduleConfig: {},
 			moduleConfigVisible: false,
 			pageConfigVisible: false,
-			pageConfig: templates.find((item) => item.value === "FormList")
-				.tConfig,
-			tableConfigList: [
-				{
+			pageConfig: copyObj(
+				templates.find((item) => item.value === "FormList")
+			).config,
+			tableConfigList: {
+				columnName: {
 					label: "列名",
 					value: [{ label: "" }],
 					type: "table-config",
 				},
-			],
+			},
 			previewVisible: false,
 			page: "",
 			codes: "",
+			activeModule: null,
 		});
-		const setUniqId = (index) => {
-			const item = state.formList[index];
-			if (!item.id) {
-				item.id = Date.now();
-			}
-		};
 		const moreClick = inject("moreClick");
 		const handleClick = (element) => {
 			state.moduleConfigVisible = true;
-			state.moduleConfig = copyObj(element.config);
+			state.moduleConfig = element.config;
+			state.activeModule = element;
 		};
 		const tableConfig = () => {
 			state.moduleConfig = state.tableConfigList;
 			state.moduleConfigVisible = true;
 		};
-		const previewClick = inject("previewClick");
-		const saveClick = inject("saveClick");
-		watch(previewClick.value, (val) => {
-			state.previewVisible = true;
-			nextTick(() => {
-				const com = defineAsyncComponent(() =>
-					import(
-						"http://ctpublish.oss-cn-hangzhou.aliyuncs.com/teambition%2F.%E5%90%8D%E7%A7%B0v%E5%90%8D%E7%A7%B0u%E5%90%8D%E7%A7%B0e"
-					)
-				);
-				const app = createApp({
-					components: {
-						AsyncComponent: com,
-					},
-					template: `<async-component></async-component>`,
-				}).mount("#preview");
-			});
-		});
+		const getComponent = (name) => {
+			return "common-demo";
+		};
+		const beforeModuleConfigClose = () => {
+			// 默认值绑定
+			if (
+				state.moduleConfig.default &&
+				state.moduleConfig.default.value
+			) {
+				state.activeModule.value = state.moduleConfig.default.value;
+			}
+			// 下拉框下拉菜单绑定
+			if (state.activeModule.name === "DemoSelect") {
+				const config = state.moduleConfig.selectConfig;
+				if (state.moduleConfig.remote === false) {
+					if (config.value.type === "custom") {
+						state.moduleConfig.options = config.value.list;
+					} else {
+						state.moduleConfig.options =
+							CommonOptions[config.value.type];
+					}
+				} else {
+					state.moduleConfig.options = [];
+				}
+			}
+		};
 		watch(moreClick.value, (val) => {
 			state.pageConfigVisible = true;
 		});
-		watch(saveClick.value, (val) => {
+		const saveTemplate = () => {
 			const params = {
-				vue: generateCodes(),
+				name: state.title,
 				config: {
-					page: state.pageConfig,
-					table: state.tableConfig,
 					formList: state.formList,
+					columnList: state.tableConfigList,
+					icon: state.icon,
+					title: state.title,
+					hasExport: state.hasExport,
 				},
-				name: "模板",
 			};
-			updateTemplate(params)
-				.then((res) => {
-					ElMessage.success("保存成功");
-				})
-				.catch(() => {
-					ElMessage.error("保存失败");
-				});
-		});
+		};
+		const preview = () => {
+			const config = {
+				formList: state.formList,
+				columnList: state.tableConfigList,
+				icon: state.icon,
+				title: state.title,
+				hasExport: state.hasExport,
+			};
+			const params = {
+				vue: generatorConfig("formlist", config),
+			};
+			// previewTemplate(params).then((res) => {
+			const asyncComponent = defineAsyncComponent(() =>
+				import("http://localhost:8068/cache/cache.vue")
+			);
+			const app = createApp({
+				template: "<async-component></async-component>",
+				components: {
+					asyncComponent,
+				},
+			});
+			state.previewVisible = true;
+			nextTick(() => {
+				app.mount("#preview");
+			});
+			// });
+		};
 		return {
 			...toRefs(state),
-			setUniqId,
 			handleClick,
 			moreClick,
 			tableConfig,
+			getComponent,
+			saveTemplate,
+			beforeModuleConfigClose,
+			preview,
 		};
 	},
 };
@@ -230,6 +257,7 @@ export default {
 		padding: 15px 0;
 		.form-list {
 			display: flex;
+			justify-content: space-between;
 			flex-wrap: wrap;
 			margin-right: -20px;
 			min-height: 40px;

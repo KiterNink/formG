@@ -1,45 +1,35 @@
 <template>
 	<div class="manage-container">
-		<h2>基础模板</h2>
-		<p class="desc-text">包括了新增模板和Excel导入两种功能</p>
-		<!-- <el-divider></el-divider> -->
-		<div class="template-manage-wrap">
-			<ul class="template-list">
-				<el-tooltip effect="light" content="新增数据" placement="top">
-					<li class="template-item add-database" @click="addDatabase">
-						<!-- 添加数据 -->
-					</li>
-				</el-tooltip>
-				<el-tooltip effect="light" content="新增模板" placement="top">
-					<li class="template-item add-template" @click="addPage">
-						<!-- 添加模板 -->
-					</li>
-				</el-tooltip>
-				<li
-					class="template-item"
-					v-for="(item, index) of pageList"
-					:key="index"
-					@click.stop="handlePage('view', item.id)"
-				>
-					<ul class="template-item-center">
+		<div
+			class="template-class"
+			v-for="(item, index) of templateList"
+			:key="index"
+		>
+			<h2>{{ item.label }}</h2>
+			<p class="desc-text">{{ item.desc }}</p>
+			<div class="template-manage-wrap">
+				<ul class="template-list">
+					<el-tooltip
+						effect="light"
+						:content="m.label"
+						placement="top"
+						v-for="(m, i) of item.list"
+						:key="i"
+					>
 						<li
-							class="button-item"
-							@click="handlePage('view', item.id)"
-						>
-							<i class="el-icon-view"></i>
-						</li>
-						<li
-							class="button-item"
-							@click="handlePage('delete', item.id)"
-						>
-							<i class="el-icon-delete"></i>
-						</li>
-					</ul>
-					<p class="template-item-name">{{ item.name }}</p>
-				</li>
-			</ul>
+							class="template-item"
+							:style="{
+								background: m.background,
+								backgroundSize: 'cover',
+							}"
+							@click="goConfig(m.route)"
+						></li>
+					</el-tooltip>
+				</ul>
+			</div>
 		</div>
 	</div>
+	<el-dialog title="新增数据" center v-model="visible"> </el-dialog>
 </template>
 
 <script>
@@ -47,7 +37,9 @@ import { reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
 import imgExcel from "../assets/img/icon-excel.png";
 import imgEmpty from "../assets/img/icon-empty.png";
-import { getTemplates } from "../api/templates";
+import imgDragger from "../assets/img/img-dragger.png";
+import imgSurvey from "../assets/img/survey/banner.png";
+// import { getTemplates } from "../api/templates";
 export default {
 	name: "TemplateManage",
 	setup() {
@@ -57,52 +49,51 @@ export default {
 			visible: false,
 			templateList: [
 				{
-					label: "空白表单",
-					value: "FormList",
-					img: imgEmpty,
+					label: "新增数据",
+					desc: "包括了拖拽生成和Excel导入两种模式",
+					list: [
+						{
+							label: "Excel导入",
+							background: `url(${imgExcel}) no-repeat center center`,
+							route: { name: "Excel" },
+						},
+						{
+							label: "拖拽字段建表",
+							background: `url(${imgEmpty}) no-repeat center center`,
+							route: { name: "DragCreate" },
+						},
+					],
 				},
 				{
-					label: "从Excel创建",
-					value: "Excel",
-					img: imgExcel,
+					label: "新增模板",
+					desc: "基于已有的物料拖拽建立模板",
+					list: [
+						{
+							label: "过滤查找",
+							background: `url(${imgDragger}) no-repeat center center`,
+							route: {
+								name: "config",
+								query: { template: "FormList" },
+							},
+						},
+						{
+							label: "问卷调查",
+							background: `url(${imgSurvey}) no-repeat center center`,
+							route: null,
+						},
+					],
 				},
 			],
 			tlte: "FormList",
 		});
-		const addPage = () => {
-			// state.visible = true;
-			router.push({ name: "config", query: { template: "FormList" } });
+		const goConfig = (route) => {
+			if (route) {
+				router.push(route);
+			}
 		};
-		const handlePage = (type, id) => {
-			// if (type === "view") {
-			// 	router.push({ name: "config", query: { id } });
-			// } else {
-			// }
-		};
-		const closeDialog = () => {
-			state.visible = false;
-		};
-		const goConfig = () => {
-			router.push({ name: "config", query: { template: state.tlte } });
-		};
-		const getData = () => {
-			// const params = {};
-			// getTemplates(params).then((res) => {
-			// 	state.pageList = res.list;
-			// });
-		};
-		const addDatabase = () => {
-			router.push({ name: "Excel" });
-		};
-		getData();
 		return {
 			...toRefs(state),
-			handlePage,
-			addPage,
-			closeDialog,
 			goConfig,
-			getData,
-			addDatabase,
 		};
 	},
 };

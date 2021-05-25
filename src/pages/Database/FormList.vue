@@ -1,5 +1,5 @@
 <template>
-	<div class="form-list-final">
+	<div class="form-list-final" ref="wrap">
 		<!-- <div class="form-wrap">
 			<div class="wrap-header form-header">
 				<div class="left">
@@ -46,7 +46,29 @@
 					</p>
 				</div>
 				<div class="right">
-					<!-- <div class="bt-import"></div>
+					<el-button
+						:disabled="!selectedList.length"
+						type="danger"
+						size="mini"
+						v-show="checkboxShow"
+						@click="deleteItems"
+						>确认删除</el-button
+					>
+					<el-button
+						type="danger"
+						size="mini"
+						@click="checkboxShow = !checkboxShow"
+						>{{ checkboxShow ? "取消删除" : "删除" }}</el-button
+					>
+					<el-button
+						type="primary"
+						size="mini"
+						@click="showImportDialog"
+						>导入数据</el-button
+					>
+					<el-button type="primary" size="mini" @click="addRow"
+						>新增一行</el-button
+					>
 					<div class="bt-export">
 						<img
 							src="../../assets/img/icon-export.png"
@@ -54,11 +76,22 @@
 							class="icon-export"
 						/>
 						<p>导出数据</p>
-					</div> -->
+					</div>
 				</div>
 			</div>
 			<div class="table-body">
-				<el-table :data="list" stripe border>
+				<el-table
+					:data="list"
+					stripe
+					border
+					@selection-change="handleSelectionChange"
+				>
+					<el-table-column
+						type="selection"
+						width="55"
+						v-if="checkboxShow"
+					>
+					</el-table-column>
 					<el-table-column
 						label="序号"
 						type="index"
@@ -72,6 +105,18 @@
 						:min-width="column.width"
 						show-overflow-tooltip
 					>
+						<template #default="scope">
+							<el-input
+								v-model="scope.row[column.prop]"
+								placeholder="填入数据"
+								size="mini"
+								v-if="scope.row.isFake"
+								@keyup.enter="saveRowData"
+							></el-input>
+							<p class="overflow" v-else>
+								{{ scope.row[column.prop] }}
+							</p>
+						</template>
 					</el-table-column>
 				</el-table>
 			</div>
@@ -88,23 +133,234 @@
 			</div>
 		</div>
 	</div>
+	<el-dialog
+		title="导入数据"
+		v-model="visible"
+		destroy-on-close
+		:close-on-click-modal="false"
+	>
+		<el-form :model="form" :rules="formRules" ref="form">
+			<el-form-item label="导出模板：">
+				<el-button type="primary" size="mini" @click="exportTemplate"
+					>点击导出</el-button
+				>
+			</el-form-item>
+			<el-form-item label="数据：" prop="file">
+				<el-upload
+					class="upload-excel"
+					drag
+					action="#"
+					:http-request="() => {}"
+					:form-list="fileList"
+					:before-upload="beforeUpload"
+					:on-remove="handleRemove"
+					accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+				>
+					<i class="el-icon-upload"></i>
+					<div class="el-upload__text">
+						将文件拖到此处，或<em>点击上传</em>
+					</div>
+					<template #tip>
+						<div class="el-upload__tip">
+							<span style="color: red">* </span>只能上传excel文件
+						</div>
+					</template>
+				</el-upload>
+			</el-form-item>
+			<el-form-item label="是否覆盖原数据：" prop="isCover">
+				<el-radio-group v-model="form.isCover">
+					<el-radio :label="true">覆盖</el-radio>
+					<el-radio :label="false">不覆盖</el-radio>
+				</el-radio-group>
+			</el-form-item>
+		</el-form>
+
+		<template #footer>
+			<el-button type="primary" size="mini" plain @click="closeDialog"
+				>取消</el-button
+			>
+			<el-button
+				:loading="importLoading"
+				type="primary"
+				size="mini"
+				@click="importTable"
+				>确定</el-button
+			>
+		</template>
+	</el-dialog>
 </template>
 
 <script>
 import { computed, reactive, toRefs, watch, watchEffect } from "vue";
-import { getPageConfig, getTableData } from "../../api/Database";
+import {
+	deleteData,
+	getPageConfig,
+	getTableData,
+	modifyTable,
+	uploadData,
+} from "../../api/Database";
+import { ElMessage as Message } from "element-plus";
+import { getExcelTemplate, postExcel } from "../../api/templates";
+import { downloadBlobData } from "../../utils/tools";
 
 export default {
 	name: "FormList",
 	props: {
 		id: Number,
 	},
+	computed: {
+		fileList() {
+			return this.file ? [this.file] : [];
+		},
+	},
 	watch: {
 		id(val) {
 			this.getData();
 		},
 	},
+	data() {
+		return {
+			checkboxShow: false,
+			title: "",
+			formList: [],
+			columnList: [],
+			pageNo: 1,
+			pageSize: 20,
+			list: [],
+			total: 0,
+			loading: false,
+			visible: false,
+			form: {
+				file: null,
+				isCover: false,
+			},
+			formRules: {
+				file: [
+					{
+						required: true,
+						message: "未上传文件",
+						trigger: "change",
+					},
+				],
+				isCover: [
+					{
+						required: true,
+						message: "选择是否覆盖",
+						trigger: "blur",
+					},
+				],
+			},
+			importLoading: false,
+			selectedList: [],
+		};
+	},
 	methods: {
+		exportTemplate() {
+			const params = {
+				id: this.id,
+			};
+			getExcelTemplate(params).then((res) => {
+				downloadBlobData(res.data, decodeURI(res.etc));
+			});
+		},
+		deleteItems() {
+			const params = {
+				ids: this.selectedList,
+				pageid: this.id,
+			};
+			deleteData(params)
+				.then((res) => {
+					Message.success("删除成功");
+					this.getList();
+				})
+				.catch((e) => {
+					if (e.data) {
+						Message.error(e.data);
+					} else {
+						Message.error("服务器错误，删除失败");
+					}
+				});
+		},
+		handleSelectionChange(val) {
+			this.selectedList = val.map((item) => item.id);
+		},
+		handleRemove() {
+			this.form.file = null;
+		},
+		closeDialog() {
+			this.form.file = null;
+			this.form.isCover = false;
+			this.visible = false;
+		},
+		importTable() {
+			this.$refs.form.validate((valid) => {
+				if (valid) {
+					const params = new FormData();
+					params.set("type", 2);
+					params.set("cover", this.form.isCover);
+					params.set("file", this.form.file);
+					params.set("id", this.id);
+					this.importLoading = true;
+					uploadData(params)
+						.then((res) => {
+							this.importLoading = false;
+							this.closeDialog();
+							Message.success("上传成功");
+							this.getList();
+						})
+						.catch(() => {
+							this.importLoading = false;
+							Message.error("上传失败");
+						});
+				} else {
+					return;
+				}
+			});
+		},
+		saveRowData() {
+			let sum = 0;
+			const list = [];
+			this.list.forEach((item) => {
+				if (item.isFake) {
+					sum++;
+					const element = item;
+					delete element.isFake;
+					list.push(Object.values(element));
+				}
+			});
+			const params = {
+				type: 1,
+				id: this.id,
+				list,
+			};
+			modifyTable(params)
+				.then((res) => {
+					Message.success(`成功添加${sum}组数据`);
+					this.getList();
+				})
+				.catch((e) => {
+					this.getList();
+					if (e.data) {
+						Message.error(e.data);
+					} else {
+						Message.error("服务器错误,添加失败");
+					}
+				});
+		},
+		beforeUpload(file) {
+			this.form.file = file;
+		},
+		addRow() {
+			const params = { isFake: true };
+			this.columnList.forEach((item) => {
+				params[item.prop] = "";
+			});
+			this.list.push(params);
+			this.$refs.wrap.scrollTop = this.$refs.wrap.scrollHeight;
+		},
+		showImportDialog() {
+			this.visible = true;
+		},
 		indexMethod(index) {
 			return (this.pageNo - 1) * this.pageSize + index + 1;
 		},
@@ -145,21 +401,7 @@ export default {
 				});
 		},
 	},
-	setup(props, vm) {
-		const state = reactive({
-			title: "",
-			formList: [],
-			columnList: [],
-			pageNo: 1,
-			pageSize: 20,
-			list: [],
-			total: 0,
-			loading: false,
-		});
-		return {
-			...toRefs(state),
-		};
-	},
+	setup(props, vm) {},
 	created() {
 		if (this.id) {
 			this.getData();
@@ -170,6 +412,8 @@ export default {
 
 <style lang="less" scoped>
 .form-list-final {
+	height: 100%;
+	overflow-y: auto;
 	.form-wrap,
 	.table-wrap {
 		padding: 0 20px;
@@ -205,7 +449,7 @@ export default {
 		}
 		.form-body {
 			padding: 15px 0;
-			/deep/ .el-form {
+			:deep(.el-form) {
 				display: flex;
 				flex-wrap: wrap;
 				align-items: center;
@@ -250,6 +494,7 @@ export default {
 				color: #3e74ff;
 				background-color: #eaf0ff;
 				border-radius: 2px;
+				margin-left: 10px;
 				.icon-export {
 					width: 18px;
 					height: 18px;

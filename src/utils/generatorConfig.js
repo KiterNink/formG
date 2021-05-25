@@ -1,5 +1,54 @@
-export default (config) => {
-	const str = `<template>
+const elementMap = (name, config) => {
+	let result = "";
+	let _config = "";
+	// attribute
+	for (const key in config) {
+		if (config[key].prop) {
+			const prop = config[key].prop;
+			const value = config[key].value;
+			if (typeof value === "string") {
+				_config += `${prop}="${value}" `;
+			} else {
+				_config += `:${prop}="${value}" `;
+			}
+		}
+	}
+	if (name === "select") {
+		// 设置options
+		let options = [];
+		if (config.remote.value) {
+			_config += `:remote-method="query => remoteMethod(query, item.options)"`;
+		}
+		result = `
+        <el-select v-model="item.value" ${_config}>
+          <el-option v-for="(item, index) of item.options"></el-option>
+        </el-select>
+        `;
+	} else if (name === "input") {
+		result = `<el-input v-model="item.value" ${_config}></el-input>`;
+	}
+	return result;
+};
+export default (name, config) => {
+	let str;
+	/**
+	 * 过滤搜索模板
+	 * name: 'formlist',
+	 * config: {
+	 *      form: {},
+	 *      table: {}
+	 * }
+	 */
+	if (name.toLowerCase() === "formlist") {
+		const formItemList = config.formList
+			.map(
+				(item) => `
+            <el-form-item :label="${item.label}">
+            ${elementMap(item.prop, item.config)}
+            </el-form-item>`
+			)
+			.join("\n");
+		str = `<template>
     <div class="page-from-diy form-list-final">
         <div class="form-wrap">
             <div class="wrap-header form-header">
@@ -10,6 +59,7 @@ export default (config) => {
             </div>
             <div class="form-body">
                 <el-form label-width="80px" label-position="left">
+                ${formItemList}
                     <el-form-item
                         v-for="(item, index) of formList"
                         :key="index"
@@ -23,8 +73,8 @@ export default (config) => {
                     ></i>
                 </el-form>
                 <div class="form-footer">
-                    <el-button @click="reset">重置</el-button>
-                    <el-button @click="getData()" type="primary"
+                    <el-button @click="reset" size="mini">重置</el-button>
+                    <el-button @click="getData()" type="primary" size="mini"
                         >查询</el-button
                     >
                 </div>
@@ -61,7 +111,6 @@ export default (config) => {
                         :key="index"
                         :label="column.label"
                         :prop="column.prop"
-                        :min-width="column.width"
                         show-overflow-tooltip
                     >
                     </el-table-column>
@@ -101,6 +150,9 @@ const post = (url, params) => {
 const getData = (params) => {
     return post("", params);
 };
+const remoteMethod = (params) => {
+    return post("", params);
+}
 export default {
     name: "form-list-final",
     props: {
@@ -110,14 +162,14 @@ export default {
         },
     },
     data: () => ({
-        title: ${state.pageConfig[0].value},
-        icon: ${state.pageConfig[1].value},
-        formList: ${state.formList},
+        title: '${config.title}',
+        icon: '${config.icon}',
+        formList: ${JSON.stringify(config.formList)},
         pageNo: 1,
         pageSize: 20,
         list: [],
         total: 0,
-        columnList: ${state.tableConfigList[0].value}
+        columnList: ${JSON.stringify(config.columnList)}
     }),
     methods: {
         getData(page, download) {
@@ -133,7 +185,20 @@ export default {
                 this.total = res.total;
             });
         },
+        remoteMethod (query, list) {
+            const params = {
+                keyword: query
+            }
+            remoteMethod(params).then(res => {
+                list = res.list;
+            }).catch(() => {
+                list = [];
+            })
+        }
     },
+    create () {
+        this.getData();
+    }
 };
 <\/script>
 <style lang="less" scoped>
@@ -234,4 +299,6 @@ export default {
     }
 }
 </style>`;
+	}
+	return str;
 };
