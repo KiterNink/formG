@@ -4,6 +4,5 @@ import router from "./routes/index";
 import elementPlus from "element-plus";
 import "element-plus/lib/theme-chalk/index.css";
 import "./assets/style/CommonStyle.less";
-import "vite/dynamic-import-polyfill";
 const app = createApp(App);
 app.use(router).use(elementPlus).mount("#app");

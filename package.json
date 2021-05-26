@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "dynamic-import-polyfill": "^0.1.1",
     "element-plus": "^1.0.2-beta.32",
     "less": "^4.1.1",
     "less-loader": "^8.0.0",

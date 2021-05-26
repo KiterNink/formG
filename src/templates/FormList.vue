@@ -220,11 +220,9 @@ export default {
 			};
 			// previewTemplate(params).then((res) => {
 			// const asyncComponent = defineAsyncComponent(() =>
-			// 	import(`http://localhost:8068/cache/cache.vue`)
+			// 	import(`cache/cache.vue`)
 			// );
-			const asyncComponent = defineAsyncComponent({
-				loader: () => import("http://localhost:8068/cache/cache.vue"),
-			});
+			console.log(import(`http://localhost:8068/cache/cache.vue`));
 			// console.log(resolveComponent(asyncComponent));
 			// const modules = import.meta.glob.('http://localhost:8068/cache/cache.vue')
 			// const app = createApp({
