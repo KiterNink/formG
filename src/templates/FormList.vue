@@ -112,6 +112,7 @@ import {
 	createApp,
 	defineAsyncComponent,
 	nextTick,
+	resolveComponent,
 } from "vue";
 import templates from "../material/templates";
 import CustomDrag from "../modules/CustomDrag.vue";
@@ -218,19 +219,24 @@ export default {
 				vue: generatorConfig("formlist", config),
 			};
 			// previewTemplate(params).then((res) => {
-			const asyncComponent = defineAsyncComponent(() =>
-				import("http://localhost:8068/cache/cache.vue")
-			);
-			const app = createApp({
-				template: "<async-component></async-component>",
-				components: {
-					asyncComponent,
-				},
+			// const asyncComponent = defineAsyncComponent(() =>
+			// 	import(`http://localhost:8068/cache/cache.vue`)
+			// );
+			const asyncComponent = defineAsyncComponent({
+				loader: () => import("http://localhost:8068/cache/cache.vue"),
 			});
-			state.previewVisible = true;
-			nextTick(() => {
-				app.mount("#preview");
-			});
+			// console.log(resolveComponent(asyncComponent));
+			// const modules = import.meta.glob.('http://localhost:8068/cache/cache.vue')
+			// const app = createApp({
+			// 	template: "<async-component></async-component>",
+			// 	components: {
+			// 		asyncComponent,
+			// 	},
+			// });
+			// state.previewVisible = true;
+			// nextTick(() => {
+			// 	app.mount("#preview");
+			// });
 			// });
 		};
 		return {

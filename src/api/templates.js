@@ -13,8 +13,8 @@ export const getTemplates = (params) => {
 export const postExcel = (params) => {
 	return post(baseurl + "upload-excel/", params, "formdata");
 };
-export const getExcelTemplate = (params) => {
-	return post(baseurl + "upload-excel/", params);
+export const downloadExcel = (params) => {
+	return post(baseurl + "download-data/", params, "blob");
 };
 // 保存excel配置
 export const saveConfig = (params) => {

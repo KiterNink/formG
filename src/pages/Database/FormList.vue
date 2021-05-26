@@ -69,14 +69,12 @@
 					<el-button type="primary" size="mini" @click="addRow"
 						>新增一行</el-button
 					>
-					<div class="bt-export">
-						<img
-							src="../../assets/img/icon-export.png"
-							alt=""
-							class="icon-export"
-						/>
-						<p>导出数据</p>
-					</div>
+					<el-button
+						type="primary"
+						size="mini"
+						@click="downloadData('data')"
+						>导出数据</el-button
+					>
 				</div>
 			</div>
 			<div class="table-body">
@@ -84,6 +82,7 @@
 					:data="list"
 					stripe
 					border
+					@row-click="rowClick"
 					@selection-change="handleSelectionChange"
 				>
 					<el-table-column
@@ -112,6 +111,9 @@
 								size="mini"
 								v-if="scope.row.isFake"
 								@keyup.enter="saveRowData"
+								@keyup.esc="
+									cancelSaveRowData(scope.row, scope.$index)
+								"
 							></el-input>
 							<p class="overflow" v-else>
 								{{ scope.row[column.prop] }}
@@ -141,7 +143,10 @@
 	>
 		<el-form :model="form" :rules="formRules" ref="form">
 			<el-form-item label="导出模板：">
-				<el-button type="primary" size="mini" @click="exportTemplate"
+				<el-button
+					type="primary"
+					size="mini"
+					@click="downloadData('template')"
 					>点击导出</el-button
 				>
 			</el-form-item>
@@ -200,7 +205,7 @@ import {
 	uploadData,
 } from "../../api/Database";
 import { ElMessage as Message } from "element-plus";
-import { getExcelTemplate, postExcel } from "../../api/templates";
+import { downloadExcel, postExcel } from "../../api/templates";
 import { downloadBlobData } from "../../utils/tools";
 
 export default {
@@ -255,11 +260,26 @@ export default {
 		};
 	},
 	methods: {
-		exportTemplate() {
+		cancelSaveRowData(row, index) {
+			if (row.id !== undefined) {
+				this.list[index].isFake = false;
+			} else {
+				this.list.splice(index, 1);
+			}
+		},
+		rowClick(row) {
+			if (!row.isFake) {
+				row.isFake = true;
+			} else {
+				return;
+			}
+		},
+		downloadData(type) {
 			const params = {
 				id: this.id,
+				type,
 			};
-			getExcelTemplate(params).then((res) => {
+			downloadExcel(params).then((res) => {
 				downloadBlobData(res.data, decodeURI(res.etc));
 			});
 		},
@@ -320,10 +340,17 @@ export default {
 		saveRowData() {
 			let sum = 0;
 			const list = [];
+			const rowids = [];
 			this.list.forEach((item) => {
 				if (item.isFake) {
+					if (item.id) {
+						rowids.push(item.id);
+					}
 					sum++;
 					const element = item;
+					if (element.id !== undefined) {
+						delete element.id;
+					}
 					delete element.isFake;
 					list.push(Object.values(element));
 				}
@@ -333,6 +360,9 @@ export default {
 				id: this.id,
 				list,
 			};
+			if (rowids.length) {
+				params.rowids = rowids;
+			}
 			modifyTable(params)
 				.then((res) => {
 					Message.success(`成功添加${sum}组数据`);
@@ -351,6 +381,10 @@ export default {
 			this.form.file = file;
 		},
 		addRow() {
+			if (this.list.find((item) => item.isFake)) {
+				Message.info("请先取消编辑");
+				return;
+			}
 			const params = { isFake: true };
 			this.columnList.forEach((item) => {
 				params[item.prop] = "";

@@ -6,26 +6,32 @@ export const post = (url, params, type) => {
 			headers: { "Content-Type": "multipart/form-data" },
 		};
 	}
+	if (type === "blob") {
+		config = {
+			responseType: "blob",
+			responseText: "DOMString",
+		};
+	}
 	return axios
 		.post(url, params, config)
 		.then((response) => {
 			if (response && response.data) {
 				const result = response.data;
-				if (typeof result === "object") {
-					if (result.state === 0) {
-						return result.data;
-					} else {
-						throw result.data;
-					}
-				} else {
+				if (result instanceof Blob) {
 					const disposition = response.headers["content-disposition"];
 					return {
 						data: result,
 						etc: disposition.split("=")[1],
 					};
+				} else {
+					if (result.state === 0) {
+						return result.data;
+					} else {
+						throw result.data;
+					}
 				}
 			} else {
-				throw result.data;
+				throw response;
 			}
 		})
 		.catch((e) => {
