@@ -60,6 +60,7 @@ import CustomDrag from "../modules/CustomDrag.vue";
 import { ElMessage as Message } from "element-plus";
 import { saveConfig } from "../api/templates";
 import { copyObj } from "../utils/tools";
+import { useRouter } from "vue-router";
 export default {
 	name: "DragCreate",
 	components: {
@@ -82,6 +83,7 @@ export default {
 			fieldList: [],
 			tableName: "默认表名",
 		});
+		const Router = useRouter();
 		const handleClick = (item) => {
 			const id = Date.now();
 			item.id = id;
@@ -124,6 +126,7 @@ export default {
 				// };
 				saveConfig(params)
 					.then((res) => {
+						Router.push({ name: "Database" });
 						Message.success("创建成功");
 					})
 					.catch((e) => {
@@ -154,6 +157,7 @@ export default {
 <style lang="less" scoped>
 .container {
 	padding: 0px 40px;
+	height: 100%;
 	.aside-left {
 		border-right: 1px solid #ddd;
 	}
@@ -174,6 +178,8 @@ export default {
 	}
 }
 .field-list {
+	height: 100%;
+	overflow-y: auto;
 	:deep(.field-item) {
 		padding: 10px;
 		display: flex;

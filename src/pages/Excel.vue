@@ -122,14 +122,14 @@ export default {
 			Message.error("服务器错误,上传失败");
 		};
 		const saveExcelConfig = () => {
-			state.importLoading = true;
 			const config = state.excelConfig;
 			for (const key in config) {
-				if (!config[key]) {
+				if (config[key] === "") {
 					Message.info("字段未填写完整");
 					return;
 				}
 			}
+			state.importLoading = true;
 			const params = new FormData();
 			params.set("tableName", config.tableName);
 			params.set("columnList", config.columnList);

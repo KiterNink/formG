@@ -215,27 +215,6 @@ export default {
 				title: state.title,
 				hasExport: state.hasExport,
 			};
-			const params = {
-				vue: generatorConfig("formlist", config),
-			};
-			// previewTemplate(params).then((res) => {
-			// const asyncComponent = defineAsyncComponent(() =>
-			// 	import(`cache/cache.vue`)
-			// );
-			console.log(import(`http://localhost:8068/cache/cache.vue`));
-			// console.log(resolveComponent(asyncComponent));
-			// const modules = import.meta.glob.('http://localhost:8068/cache/cache.vue')
-			// const app = createApp({
-			// 	template: "<async-component></async-component>",
-			// 	components: {
-			// 		asyncComponent,
-			// 	},
-			// });
-			// state.previewVisible = true;
-			// nextTick(() => {
-			// 	app.mount("#preview");
-			// });
-			// });
 		};
 		return {
 			...toRefs(state),
