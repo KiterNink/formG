@@ -85,36 +85,31 @@ export default {
 				id: state.dataId,
 			};
 			getPageConfig(params).then((res) => {
-				state.moduleList = res.table.filter(
+				state.fieldList = res.table.filter(
 					(item) => item.label !== "序号"
 				);
 			});
 		};
-		// getDataList();
-		state.fieldList = [
-			{ label: "标题" },
-			{ label: "文献" },
-			{ label: "含义" },
-		];
+		getDataList();
 		return {
 			...toRefs(state),
 			dataItemChange,
 		};
 	},
 	mounted() {
-		// if (this.dataId === "") {
-		// 	this.driver = new window.Driver({
-		// 		allowClose: false,
-		// 	});
-		// 	this.driver.highlight({
-		// 		element: ".database-wrap",
-		// 		popover: {
-		// 			title: "请选择一个数据源",
-		// 			showButtons: false,
-		// 			position: "right",
-		// 		},
-		// 	});
-		// }
+		if (this.dataId === "") {
+			this.driver = new window.Driver({
+				allowClose: false,
+			});
+			this.driver.highlight({
+				element: ".database-wrap",
+				popover: {
+					title: "请选择一个数据源",
+					showButtons: false,
+					position: "right",
+				},
+			});
+		}
 	},
 };
 </script>

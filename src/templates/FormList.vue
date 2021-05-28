@@ -139,6 +139,11 @@ export default {
 	props: {
 		id: [String, Number],
 	},
+	watch: {
+		id(val) {
+			this.getTableConfig(val);
+		},
+	},
 	setup(props, vm) {
 		const state = reactive({
 			hasExport: true,
@@ -156,9 +161,6 @@ export default {
 			},
 			previewVisible: false,
 			activeModule: {},
-			dataId: computed(() => {
-				return props.id;
-			}),
 			comTypeList: [
 				{
 					label: "输入框",
@@ -210,6 +212,14 @@ export default {
 			);
 			state.activeModule.config.label.value = state.activeModule.label;
 		};
+		const getTableConfig = (id) => {
+			const params = {
+				id,
+			};
+			getPageConfig(params).then((res) => {
+				state.columnList = res.table;
+			});
+		};
 		return {
 			...toRefs(state),
 			handleClick,
@@ -219,6 +229,7 @@ export default {
 			beforeModuleConfigClose,
 			preview,
 			comTypeChange,
+			getTableConfig,
 		};
 	},
 };
