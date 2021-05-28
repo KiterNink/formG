@@ -29,7 +29,6 @@
 			</div>
 		</div>
 	</div>
-	<el-dialog title="新增数据" center v-model="visible"> </el-dialog>
 </template>
 
 <script>

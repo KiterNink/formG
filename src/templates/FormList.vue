@@ -131,7 +131,7 @@ export default {
 		ModuleConfigDrawer,
 		CommonDemo,
 	},
-	setup() {
+	setup(props) {
 		const state = reactive({
 			icon: computed(() => state.pageConfig.icon.value),
 			title: computed(() => state.pageConfig.title.value),
@@ -155,6 +155,9 @@ export default {
 			page: "",
 			codes: "",
 			activeModule: null,
+			dataId: computed(() => {
+				return props.id;
+			}),
 		});
 		const moreClick = inject("moreClick");
 		const handleClick = (element) => {

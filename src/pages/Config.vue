@@ -1,20 +1,39 @@
 <!--配置模板的页面-->
 <template>
 	<div class="config-container">
-		<custom-drag
-			custom-class="module-item"
-			class="module-list"
-			v-model="moduleList"
-			item-key="name"
-			:group="{ name: 'module', pull: 'clone', put: false }"
-		>
-			<template #default="{ element }">
-				<component :is="element.name" class="item-com"></component>
-				<p class="item-label">{{ element.label }}</p>
-			</template>
-		</custom-drag>
+		<div class="aside-wrap">
+			<div class="database-wrap">
+				<h3>选择数据源</h3>
+				<el-select
+					v-model="dataId"
+					size="mini"
+					@change="dataItemChange"
+				>
+					<el-option
+						v-for="item of dataList"
+						:key="item.value"
+						:label="item.label"
+						:value="item.value"
+					></el-option>
+				</el-select>
+			</div>
+			<h3>选择字段</h3>
+			<custom-drag
+				custom-class="module-item"
+				class="module-list"
+				v-model="moduleList"
+				item-key="label"
+				:group="{ name: 'module', pull: 'clone', put: false }"
+			>
+				<template #default="{ element }">
+					<component is="DemoInput" class="item-com"></component>
+					<p class="item-label">{{ element.label }}</p>
+				</template>
+			</custom-drag>
+		</div>
+
 		<div class="canvas-wrap">
-			<component :is="activeCom"></component>
+			<component :is="activeCom" :id="dataId"></component>
 		</div>
 	</div>
 </template>
@@ -27,6 +46,8 @@ import modules from "../material/modules";
 import templates from "../material/templates";
 import CustomDrag from "../modules/CustomDrag.vue";
 import { DemoInput, DemoDatePicker, DemoSelect } from "../components/index";
+import { getDatabaseList, getPageConfig } from "../api/Database";
+
 export default {
 	components: {
 		FormList,
@@ -40,17 +61,61 @@ export default {
 		const state = reactive({
 			moduleList: [],
 			activeCom: "",
+			dataList: [],
+			dataId: "",
+			driver: null,
 		});
 		state.activeCom = route.query.template;
 		const list = templates.find(
 			(item) => item.value === route.query.template
 		).list;
-		state.moduleList = list.map((i) =>
-			modules.find((item) => item.name === i)
-		);
+		// state.moduleList = list.map((i) =>
+		// 	modules.find((item) => item.name === i)
+		// );
+		const getDataList = () => {
+			getDatabaseList({}).then((res) => {
+				state.dataList = res.list.map((item) => ({
+					label: item.name,
+					value: item.id,
+				}));
+			});
+		};
+		const dataItemChange = () => {
+			getDataItemDetail();
+			if (state.driver && state.driver.isActivated) {
+				state.driver.reset();
+			}
+		};
+		const getDataItemDetail = () => {
+			const params = {
+				id: state.dataId,
+			};
+			getPageConfig(params).then((res) => {
+				state.moduleList = res.table.filter(
+					(item) => item.label !== "序号"
+				);
+			});
+		};
+		getDataList();
 		return {
 			...toRefs(state),
+			dataItemChange,
 		};
+	},
+	mounted() {
+		if (this.dataId === "") {
+			this.driver = new window.Driver({
+				allowClose: false,
+			});
+			this.driver.highlight({
+				element: ".database-wrap",
+				popover: {
+					title: "请选择一个数据源",
+					showButtons: false,
+					position: "right",
+				},
+			});
+		}
 	},
 };
 </script>
@@ -60,15 +125,20 @@ export default {
 	height: 100%;
 	display: flex;
 	padding: 15px 0;
-	.module-list,
+	.aside-wrap,
 	.canvas-wrap {
 		height: 100%;
 		overflow-y: auto;
 		padding: 0 20px;
 	}
-	.module-list {
+	.aside-wrap {
 		flex: 0 0 200px;
 		border-right: 1px solid #dcdfe6;
+		.database-wrap {
+			position: relative;
+		}
+	}
+	.module-list {
 		:deep(.module-item) {
 			position: relative;
 			height: 40px;
