@@ -2,7 +2,7 @@
 	<div class="table-top">
 		<el-form label-width="80px" inline label-position="left">
 			<el-form-item label="表名">
-				<el-input v-model="config.tableName" size="small"></el-input>
+				<el-input v-model="config.tableName" size="mini"></el-input>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -14,17 +14,14 @@
 					<td v-for="(item, index) of config.columnList" :key="index">
 						<el-input
 							v-model="config.columnList[index]"
-							size="small"
+							size="mini"
 						></el-input>
 					</td>
 				</tr>
 				<tr>
 					<td class="td-label">字段类型</td>
 					<td v-for="(type, index) of config.typeList" :key="index">
-						<el-select
-							v-model="config.typeList[index]"
-							size="small"
-						>
+						<el-select v-model="config.typeList[index]" size="mini">
 							<el-option
 								v-for="item of typeList"
 								:key="item.value"

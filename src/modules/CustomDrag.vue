@@ -4,10 +4,10 @@
 		v-model="formList"
 		tag="transition-group"
 		v-bind="dragOptions"
-		:item-key="itemKey"
+		item-key="dragKey"
 		:group="group"
-		@start="isDragging = true"
-		@end="isDragging = false"
+		@start="startDrag"
+		@end="endDrag"
 		:clone="handleClone"
 		:component-data="{
 			tag: tag,
@@ -18,7 +18,7 @@
 		<template #item="{ element }">
 			<li
 				class="list-group-item"
-				:class="customClass"
+				:class="itemClass"
 				@click="handleClick(element)"
 				v-if="tag === 'ul'"
 			>
@@ -41,13 +41,12 @@ export default {
 	components: { draggable },
 	props: {
 		list: Array,
-		itemKey: String,
 		group: [Object, String],
 		tag: {
 			type: String,
 			default: "ul",
 		},
-		customClass: String,
+		itemClass: String,
 	},
 	setup(props, vm) {
 		const state = reactive({
@@ -65,19 +64,31 @@ export default {
 					vm.emit("update:list", val);
 				},
 			}),
+			isDragging: false,
 		});
 		const handleClick = (data) => {
 			vm.emit("handleClick", data);
 		};
 		const handleClone = (element) => {
-			element.id = Date.now();
-			return copyObj(element);
+			const obj = copyObj(element);
+			obj.dragKey = Date.now();
+			return obj;
+		};
+		const startDrag = (e) => {
+			vm.emit("startDrag", e);
+			state.isDragging = true;
+		};
+		const endDrag = (e) => {
+			// e.dataTransfer.setData("index", "aaa");
+			vm.emit("endDrag");
+			state.isDragging = false;
 		};
 		return {
 			...toRefs(state),
-			isDragging: ref(false),
 			handleClick,
 			handleClone,
+			startDrag,
+			endDrag,
 		};
 	},
 };

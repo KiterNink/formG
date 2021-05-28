@@ -1,8 +1,7 @@
-export default [
-	{
+export default {
+	input: {
 		name: "DemoInput",
 		label: "输入框",
-		prop: "input",
 		value: "",
 		config: {
 			default: {
@@ -46,10 +45,9 @@ export default [
 			},
 		},
 	},
-	{
+	"date-picker": {
 		name: "DemoDatePicker",
 		label: "日期选择器",
-		prop: "date-picker",
 		value: "",
 		config: {
 			label: {
@@ -86,10 +84,9 @@ export default [
 			},
 		},
 	},
-	{
+	select: {
 		name: "DemoSelect",
 		label: "下拉框",
-		prop: "select",
 		value: "",
 		config: {
 			default: {
@@ -182,4 +179,4 @@ export default [
 			options: [],
 		},
 	},
-];
+};

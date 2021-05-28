@@ -54,14 +54,14 @@
 						type="primary"
 						plain
 						@click="backToPreStep"
-						size="small"
+						size="mini"
 						v-if="currentStep > 0"
 						>上一步</el-button
 					>
 					<el-button
 						type="primary"
 						@click="saveExcelConfig"
-						size="small"
+						size="mini"
 						v-if="currentStep === 1"
 						:loading="importLoading"
 						>导入</el-button

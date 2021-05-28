@@ -1,9 +1,6 @@
 <template>
 	<div class="page-header common-space">
 		<div class="left">
-			<div class="bt-more" @click="clickMore">
-				<i class="el-icon-more"></i>
-			</div>
 			<i
 				@click="routerChange(item.value)"
 				v-for="(item, index) of routes"
@@ -42,26 +39,17 @@ import { reactive, toRefs, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 export default {
 	name: "index",
-	provide() {
-		return {
-			moreClick: { value: computed(() => this.moreClick) },
-		};
-	},
 	setup() {
 		const router = useRouter();
 		const route = useRoute();
 		const state = reactive({
 			userName: "kiter",
-			moreClick: 0,
 			routes: [
 				{ label: "首页", value: "index" },
 				{ label: "数据中心", value: "Database" },
 				{ label: "页面内容", value: "PageMain" },
 			],
 		});
-		const clickMore = () => {
-			state.moreClick++;
-		};
 		const routerChange = (rou) => {
 			if (route.name !== rou) {
 				router.push({ name: rou });
@@ -69,7 +57,6 @@ export default {
 		};
 		return {
 			...toRefs(state),
-			clickMore,
 			routerChange,
 			route,
 		};
@@ -80,7 +67,7 @@ export default {
 <style lang="less" scoped>
 .page-header {
 	height: 40px;
-	padding: 0 80px;
+	padding: 0 40px;
 	border-bottom: 1px solid #dcdfe6;
 	position: relative;
 	.bt-more {

@@ -1,7 +1,6 @@
 import Config from "../pages/Config.vue";
 import Index from "../pages/index.vue";
 import Manage from "../pages/Manage.vue";
-import PageMain from "@/pages/PageMain.vue";
 import Database from "@/pages/Database/index.vue";
 import Excel from "@/pages/Excel.vue";
 import DragCreate from "@/pages/DragCreate.vue";
@@ -21,11 +20,6 @@ export const routes = [
 				name: "config",
 				path: "config",
 				component: Config,
-			},
-			{
-				name: "PageMain",
-				path: "pagemain",
-				component: PageMain,
 			},
 			{
 				name: "Excel",

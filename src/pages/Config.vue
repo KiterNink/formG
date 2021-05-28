@@ -17,23 +17,24 @@
 					></el-option>
 				</el-select>
 			</div>
-			<h3>选择字段</h3>
-			<custom-drag
-				custom-class="module-item"
-				class="module-list"
-				v-model="moduleList"
-				item-key="label"
-				:group="{ name: 'module', pull: 'clone', put: false }"
-			>
-				<template #default="{ element }">
-					<component is="DemoInput" class="item-com"></component>
-					<p class="item-label">{{ element.label }}</p>
-				</template>
-			</custom-drag>
+			<div class="field-wrap">
+				<h3>选择字段</h3>
+				<custom-drag
+					item-class="drag-item"
+					class="drag-list"
+					v-model="fieldList"
+					:group="{ name: 'module', pull: 'clone', put: false }"
+				>
+					<template #default="{ element }">
+						<el-input readonly value="" class="item-com"></el-input>
+						<p class="item-label">{{ element.label }}</p>
+					</template>
+				</custom-drag>
+			</div>
 		</div>
 
 		<div class="canvas-wrap">
-			<component :is="activeCom" :id="dataId"></component>
+			<component :is="activeCom" v-model:id="dataId"></component>
 		</div>
 	</div>
 </template>
@@ -42,36 +43,29 @@
 import FormList from "../templates/FormList.vue";
 import { reactive, toRefs } from "vue";
 import { useRoute } from "vue-router";
-import modules from "../material/modules";
 import templates from "../material/templates";
 import CustomDrag from "../modules/CustomDrag.vue";
-import { DemoInput, DemoDatePicker, DemoSelect } from "../components/index";
 import { getDatabaseList, getPageConfig } from "../api/Database";
 
 export default {
 	components: {
 		FormList,
 		CustomDrag,
-		DemoSelect,
-		DemoInput,
-		DemoDatePicker,
 	},
 	setup() {
 		const route = useRoute();
 		const state = reactive({
-			moduleList: [],
 			activeCom: "",
 			dataList: [],
 			dataId: "",
 			driver: null,
+			fieldList: [],
+			isDragging: false,
 		});
 		state.activeCom = route.query.template;
 		const list = templates.find(
 			(item) => item.value === route.query.template
 		).list;
-		// state.moduleList = list.map((i) =>
-		// 	modules.find((item) => item.name === i)
-		// );
 		const getDataList = () => {
 			getDatabaseList({}).then((res) => {
 				state.dataList = res.list.map((item) => ({
@@ -96,26 +90,31 @@ export default {
 				);
 			});
 		};
-		getDataList();
+		// getDataList();
+		state.fieldList = [
+			{ label: "标题" },
+			{ label: "文献" },
+			{ label: "含义" },
+		];
 		return {
 			...toRefs(state),
 			dataItemChange,
 		};
 	},
 	mounted() {
-		if (this.dataId === "") {
-			this.driver = new window.Driver({
-				allowClose: false,
-			});
-			this.driver.highlight({
-				element: ".database-wrap",
-				popover: {
-					title: "请选择一个数据源",
-					showButtons: false,
-					position: "right",
-				},
-			});
-		}
+		// if (this.dataId === "") {
+		// 	this.driver = new window.Driver({
+		// 		allowClose: false,
+		// 	});
+		// 	this.driver.highlight({
+		// 		element: ".database-wrap",
+		// 		popover: {
+		// 			title: "请选择一个数据源",
+		// 			showButtons: false,
+		// 			position: "right",
+		// 		},
+		// 	});
+		// }
 	},
 };
 </script>
@@ -138,8 +137,8 @@ export default {
 			position: relative;
 		}
 	}
-	.module-list {
-		:deep(.module-item) {
+	.drag-list {
+		:deep(.drag-item) {
 			position: relative;
 			height: 40px;
 			margin: 20px 0;

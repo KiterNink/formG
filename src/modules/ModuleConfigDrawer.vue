@@ -7,6 +7,7 @@
 	>
 		<div class="template-config">
 			<el-form label-width="100px" label-position="left">
+				<slot></slot>
 				<el-form-item
 					v-for="(item, key, index) in list"
 					:key="index"

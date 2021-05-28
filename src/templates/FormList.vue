@@ -3,7 +3,11 @@
 		<div class="common-card form-wrap">
 			<div class="common-card-header common-space">
 				<div class="left">
-					<img :src="icon" alt="" class="icon-title-pre" />
+					<img
+						src="../assets/img/icon-card-preicon.png"
+						alt=""
+						class="icon-title-pre"
+					/>
 					<p class="title">{{ title }}</p>
 				</div>
 			</div>
@@ -11,8 +15,7 @@
 				<custom-drag
 					v-model="formList"
 					class="form-list"
-					custom-class="form-item"
-					item-key="id"
+					item-class="form-item"
 					group="module"
 					@handleClick="handleClick"
 				>
@@ -34,8 +37,8 @@
 					</template>
 				</custom-drag>
 				<div class="form-button-group">
-					<el-button size="small">重置</el-button>
-					<el-button size="small" type="primary">查询</el-button>
+					<el-button size="mini">重置</el-button>
+					<el-button size="mini" type="primary">查询</el-button>
 				</div>
 			</div>
 		</div>
@@ -61,7 +64,7 @@
 				</div>
 			</div>
 			<div class="table-body" @click="tableConfig">
-				<el-table :data="[]" stripe border>
+				<el-table :data="list" stripe border>
 					<el-table-column
 						v-for="(item, index) of columnList"
 						:key="index"
@@ -86,16 +89,28 @@
 		</el-dialog>
 	</div>
 	<module-config-drawer
-		v-model:config="moduleConfig"
+		v-model:config="activeModule.config"
 		v-model:visible="moduleConfigVisible"
 		direction="rtl"
 		@beforeClose="beforeModuleConfigClose"
-	></module-config-drawer>
-	<module-config-drawer
-		v-model:config="pageConfig"
-		v-model:visible="pageConfigVisible"
-		direction="ltr"
-	></module-config-drawer>
+	>
+		<template #default>
+			<el-form-item label="选择组件:">
+				<el-select
+					v-model="activeModule.type"
+					size="mini"
+					@change="comTypeChange"
+				>
+					<el-option
+						v-for="(item, index) of comTypeList"
+						:key="index"
+						:label="item.label"
+						:value="item.value"
+					></el-option>
+				</el-select>
+			</el-form-item>
+		</template>
+	</module-config-drawer>
 	<teleport to="#teleport-page-header">
 		<el-button type="text" @click="saveTemplate">保存</el-button>
 		<el-button type="text" @click="preview">预览</el-button>
@@ -103,18 +118,7 @@
 </template>
 
 <script>
-import {
-	computed,
-	inject,
-	reactive,
-	toRefs,
-	watch,
-	createApp,
-	defineAsyncComponent,
-	nextTick,
-	resolveComponent,
-} from "vue";
-import templates from "../material/templates";
+import { computed, inject, reactive, toRefs, watch } from "vue";
 import CustomDrag from "../modules/CustomDrag.vue";
 import ModuleConfigDrawer from "../modules/ModuleConfigDrawer.vue";
 import { copyObj } from "../utils/tools";
@@ -124,6 +128,7 @@ import { CommonDemo } from "../material/FormList/index";
 import CommonOptions from "../material/SelectOptionList/Common";
 import generatorConfig from "@/utils/generatorConfig";
 import { previewTemplate } from "../api/templates";
+import modules from "../material/modules";
 export default {
 	name: "FormList",
 	components: {
@@ -131,19 +136,17 @@ export default {
 		ModuleConfigDrawer,
 		CommonDemo,
 	},
-	setup(props) {
+	props: {
+		id: [String, Number],
+	},
+	setup(props, vm) {
 		const state = reactive({
-			icon: computed(() => state.pageConfig.icon.value),
-			title: computed(() => state.pageConfig.title.value),
-			hasExport: computed(() => state.pageConfig.hasExport.value),
+			hasExport: true,
+			title: "分析页面",
 			formList: [],
 			columnList: [],
-			moduleConfig: {},
+			list: [],
 			moduleConfigVisible: false,
-			pageConfigVisible: false,
-			pageConfig: copyObj(
-				templates.find((item) => item.value === "FormList")
-			).config,
 			tableConfigList: {
 				columnName: {
 					label: "列名",
@@ -152,52 +155,42 @@ export default {
 				},
 			},
 			previewVisible: false,
-			page: "",
-			codes: "",
-			activeModule: null,
+			activeModule: {},
 			dataId: computed(() => {
 				return props.id;
 			}),
+			comTypeList: [
+				{
+					label: "输入框",
+					value: "input",
+				},
+				{ label: "日期选择框", value: "date-picker" },
+				{ label: "下拉框", value: "select" },
+			],
 		});
-		const moreClick = inject("moreClick");
 		const handleClick = (element) => {
 			state.moduleConfigVisible = true;
-			state.moduleConfig = element.config;
-			state.activeModule = element;
+			const type = element.type || "input";
+			let config = {};
+			if (element.config) {
+				config = element.config;
+			} else {
+				config = copyObj(modules[type].config);
+				config.label.value = element.label;
+			}
+			state.activeModule = {
+				label: element.label,
+				type,
+				config,
+			};
 		};
 		const tableConfig = () => {
-			state.moduleConfig = state.tableConfigList;
 			state.moduleConfigVisible = true;
 		};
 		const getComponent = (name) => {
 			return "common-demo";
 		};
-		const beforeModuleConfigClose = () => {
-			// 默认值绑定
-			if (
-				state.moduleConfig.default &&
-				state.moduleConfig.default.value
-			) {
-				state.activeModule.value = state.moduleConfig.default.value;
-			}
-			// 下拉框下拉菜单绑定
-			if (state.activeModule.name === "DemoSelect") {
-				const config = state.moduleConfig.selectConfig;
-				if (state.moduleConfig.remote === false) {
-					if (config.value.type === "custom") {
-						state.moduleConfig.options = config.value.list;
-					} else {
-						state.moduleConfig.options =
-							CommonOptions[config.value.type];
-					}
-				} else {
-					state.moduleConfig.options = [];
-				}
-			}
-		};
-		watch(moreClick.value, (val) => {
-			state.pageConfigVisible = true;
-		});
+		const beforeModuleConfigClose = () => {};
 		const saveTemplate = () => {
 			const params = {
 				name: state.title,
@@ -210,24 +203,22 @@ export default {
 				},
 			};
 		};
-		const preview = () => {
-			const config = {
-				formList: state.formList,
-				columnList: state.tableConfigList,
-				icon: state.icon,
-				title: state.title,
-				hasExport: state.hasExport,
-			};
+		const preview = () => {};
+		const comTypeChange = () => {
+			state.activeModule.config = copyObj(
+				modules[state.activeModule.type].config
+			);
+			state.activeModule.config.label.value = state.activeModule.label;
 		};
 		return {
 			...toRefs(state),
 			handleClick,
-			moreClick,
 			tableConfig,
 			getComponent,
 			saveTemplate,
 			beforeModuleConfigClose,
 			preview,
+			comTypeChange,
 		};
 	},
 };
@@ -266,6 +257,20 @@ export default {
 		}
 		.form-button-group {
 			text-align: right;
+		}
+		.comtype-slot-wrap {
+			.form-item {
+				width: 250px;
+				border: 1px dashed #ddd;
+				text-align: center;
+				height: 40px;
+				line-height: 40px;
+				display: block;
+				color: #ddd;
+				&:hover {
+					transform: scale(1.1);
+				}
+			}
 		}
 	}
 	.table-wrap {

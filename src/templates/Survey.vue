@@ -12,7 +12,6 @@
 		<custom-drag
 			v-model="formList"
 			class="form-wrap"
-			item-key="id"
 			group="com"
 			custom-item-class="form-item"
 		>

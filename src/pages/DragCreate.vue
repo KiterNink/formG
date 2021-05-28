@@ -8,10 +8,9 @@
 			>
 				<h2>{{ item.label }}</h2>
 				<custom-drag
-					custom-class="type-item"
+					item-class="type-item"
 					class="type-wrap"
 					v-model="item.list"
-					item-key="value"
 					:group="{ name: 'module', pull: 'clone', put: false }"
 					@handleClick="handleClick"
 				>
@@ -25,8 +24,7 @@
 			<custom-drag
 				v-model="fieldList"
 				class="field-list"
-				custom-class="field-item"
-				item-key="id"
+				item-class="field-item"
 				group="module"
 			>
 				<template #default="{ element }">
