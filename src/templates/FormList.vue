@@ -70,7 +70,6 @@
 						v-for="(item, index) of columnList"
 						:key="index"
 						:label="item.label"
-						:min-width="item.width"
 					></el-table-column>
 				</el-table>
 			</div>
@@ -94,25 +93,59 @@
 		v-model:visible="moduleConfigVisible"
 		direction="rtl"
 		@beforeClose="beforeModuleConfigClose"
+		class="custom-drawer"
 	>
 		<template #default>
-			<el-button type="danger" @click="deleteFormItem" size="mini"
-				>删除</el-button
-			>
-			<el-form-item label="选择组件:">
-				<el-select
-					v-model="activeModule.type"
-					size="mini"
-					@change="comTypeChange"
+			<div class="form-config" v-if="activeModuleType === 'form'">
+				<el-button type="danger" @click="deleteFormItem" size="mini"
+					>删除</el-button
 				>
-					<el-option
-						v-for="(item, index) of comTypeList"
+				<el-form-item label="选择组件:">
+					<el-select
+						v-model="activeModule.type"
+						size="mini"
+						@change="comTypeChange"
+					>
+						<el-option
+							v-for="(item, index) of comTypeList"
+							:key="index"
+							:label="item.label"
+							:value="item.value"
+						></el-option>
+					</el-select>
+				</el-form-item>
+			</div>
+			<div class="table-config" v-else>
+				<h3>表格配置</h3>
+				<ul class="table-column-list">
+					<li
+						class="table-column"
+						v-for="(item, index) of columnList"
 						:key="index"
-						:label="item.label"
-						:value="item.value"
-					></el-option>
-				</el-select>
-			</el-form-item>
+					>
+						<el-input v-model="item.label" class="input"></el-input>
+						<i
+							class="el-icon-delete"
+							@click="deleteColumn(index)"
+						></i>
+					</li>
+				</ul>
+				<h3>列宽度设置<i style="font-size: 12px">*最小宽度</i></h3>
+				<ul class="table-column-list">
+					<li
+						class="table-column column-cell"
+						v-for="(item, index) of columnList"
+						:key="index"
+					>
+						<p class="label overflow">{{ item.label }}</p>
+						<el-input
+							v-model="item.width"
+							placeholder="默认自适应"
+							size="mini"
+						></el-input>
+					</li>
+				</ul>
+			</div>
 		</template>
 	</module-config-drawer>
 	<teleport to="#teleport-page-header">
@@ -265,6 +298,7 @@ export default {
 					},
 				],
 			},
+			activeModuleType: "",
 		});
 		const handleClick = (item) => {
 			state.moduleConfigVisible = true;
@@ -272,18 +306,24 @@ export default {
 				(e) => e.dragKey === item.dragKey
 			);
 			state.activeModule = element;
+			state.activeModuleType = "form";
 		};
 		const tableConfig = () => {
+			state.activeModuleType = "table";
 			state.moduleConfigVisible = true;
 		};
 		const getComponent = (name) => {
 			return "common-demo";
 		};
 		const beforeModuleConfigClose = () => {
-			if (state.activeModule.config.default.value) {
+			if (
+				state.activeModuleType === "form" &&
+				state.activeModule.config.default.value
+			) {
 				state.activeModule.value =
 					state.activeModule.config.default.value;
 			}
+			state.activeModule = {};
 		};
 		const preview = () => {};
 		const comTypeChange = () => {
@@ -334,6 +374,13 @@ export default {
 				element.value = "";
 			}
 		};
+		const deleteColumn = (index) => {
+			if (state.columnList.length > 1) {
+				state.columnList.splice(index, 1);
+			} else {
+				Message.info("至少保留一列");
+			}
+		};
 		return {
 			...toRefs(state),
 			handleClick,
@@ -348,6 +395,7 @@ export default {
 			Router,
 			deleteFormItem,
 			itemAdded,
+			deleteColumn,
 		};
 	},
 };
@@ -435,6 +483,28 @@ export default {
 	margin-top: 5vh !important;
 	.el-dialog__body {
 		background: #e8e9ed;
+	}
+}
+.table-config {
+	.table-column-list {
+		.table-column {
+			margin-bottom: 10px;
+			.input {
+				margin-right: 10px;
+			}
+			.el-icon-delete {
+				cursor: pointer;
+			}
+			&.column-cell {
+				display: flex;
+				.label {
+					padding-right: 10px;
+					width: 80px;
+					flex-shrink: 0;
+					text-align: left;
+				}
+			}
+		}
 	}
 }
 </style>
