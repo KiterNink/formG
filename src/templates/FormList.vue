@@ -84,9 +84,9 @@
 				</div>
 			</div>
 		</div>
-		<el-dialog title="模板预览" v-model="previewVisible" center width="90%">
+		<!-- <el-dialog title="模板预览" v-model="previewVisible" center width="90%">
 			<div id="preview"></div>
-		</el-dialog>
+		</el-dialog> -->
 	</div>
 	<module-config-drawer
 		v-model:config="activeModule.config"

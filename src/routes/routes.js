@@ -1,40 +1,34 @@
-import Config from "../pages/Config.vue";
-import Index from "../pages/index.vue";
-import Manage from "../pages/Manage.vue";
-import Database from "@/pages/Database/index.vue";
-import Excel from "@/pages/Excel.vue";
-import DragCreate from "@/pages/DragCreate.vue";
 export const routes = [
 	{
 		name: "index",
 		path: "/",
-		component: Index,
+		component: () => import("../pages/index.vue"),
 		redirect: { name: "manage" },
 		children: [
 			{
 				name: "manage",
 				path: "manage",
-				component: Manage,
+				component: () => import("../pages/Manage.vue"),
 			},
 			{
 				name: "config",
 				path: "config",
-				component: Config,
+				component: () => import("../pages/Config.vue"),
 			},
 			{
 				name: "Excel",
 				path: "excel",
-				component: Excel,
+				component: () => import("@/pages/Excel.vue"),
 			},
 			{
 				name: "Database",
 				path: "database",
-				component: Database,
+				component: () => import("@/pages/Database/index.vue"),
 			},
 			{
 				name: "DragCreate",
 				path: "dragcreate",
-				component: DragCreate,
+				component: () => import("@/pages/DragCreate.vue"),
 			},
 		],
 	},

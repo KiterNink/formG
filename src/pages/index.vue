@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { reactive, toRefs, computed } from "vue";
+import { reactive, toRefs } from "vue";
 import { useRouter, useRoute } from "vue-router";
 export default {
 	name: "index",
