@@ -70,6 +70,7 @@
 						v-for="(item, index) of columnList"
 						:key="index"
 						:label="item.label"
+						:prop="item.prop"
 					></el-table-column>
 				</el-table>
 			</div>
@@ -316,12 +317,11 @@ export default {
 			return "common-demo";
 		};
 		const beforeModuleConfigClose = () => {
-			if (
-				state.activeModuleType === "form" &&
-				state.activeModule.config.default.value
-			) {
+			if (state.activeModuleType === "form") {
 				state.activeModule.value =
 					state.activeModule.config.default.value;
+				state.activeModule.options =
+					state.activeModule.config.selectConfig.value.list;
 			}
 			state.activeModule = {};
 		};

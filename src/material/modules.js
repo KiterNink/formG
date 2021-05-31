@@ -88,6 +88,7 @@ export default {
 		name: "DemoSelect",
 		label: "下拉框",
 		value: "",
+		options: [],
 		config: {
 			default: {
 				label: "默认值",
@@ -176,7 +177,6 @@ export default {
 				value: { type: "custom", list: [] },
 				type: "select-config",
 			},
-			options: [],
 		},
 	},
 };

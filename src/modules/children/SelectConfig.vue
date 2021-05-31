@@ -14,7 +14,7 @@
 			</el-option>
 			<el-option label="手动添加" value="custom"></el-option>
 		</el-select>
-		<ul class="select-list-wrap" v-if="type === 'custom'">
+		<ul class="select-list-wrap" v-if="configObject.type === 'custom'">
 			<el-button type="primary" size="mini" @click="addOption"
 				>新增</el-button
 			>
