@@ -7,13 +7,14 @@
     "serve": "vite preview --port=8066"
   },
   "dependencies": {
+    "@vue/server-renderer": "^3.0.11",
     "axios": "^0.21.1",
     "element-plus": "^1.0.2-beta.32",
+    "express": "^4.17.1",
     "less": "^4.1.1",
     "less-loader": "^8.0.0",
     "vue": "^3.0.11",
     "vue-router": "^4.0.4",
-    "vue3-sfc-loader": "^0.7.3",
     "vuedraggable": "^4.0.1"
   },
   "devDependencies": {
