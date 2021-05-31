@@ -8,7 +8,7 @@
 						alt=""
 						class="icon-title-pre"
 					/>
-					<p class="title">{{ title }}</p>
+					<p class="title">{{ form.title }}</p>
 				</div>
 			</div>
 			<div class="form-body">
@@ -18,6 +18,7 @@
 					item-class="form-item"
 					group="module"
 					@handleClick="handleClick"
+					@itemAdded="itemAdded"
 				>
 					<template #default="{ element }">
 						<p class="item-label">{{ element.label }}:</p>
@@ -53,7 +54,7 @@
 					<p>查询结果： 共0条记录， 每页显示20条</p>
 				</div>
 				<div class="right">
-					<div class="bt-export" v-show="hasExport">
+					<div class="bt-export" v-show="form.hasExport">
 						<img
 							src="../assets/img/icon-export.png"
 							alt=""
@@ -95,6 +96,9 @@
 		@beforeClose="beforeModuleConfigClose"
 	>
 		<template #default>
+			<el-button type="danger" @click="deleteFormItem" size="mini"
+				>删除</el-button
+			>
 			<el-form-item label="选择组件:">
 				<el-select
 					v-model="activeModule.type"
@@ -112,9 +116,42 @@
 		</template>
 	</module-config-drawer>
 	<teleport to="#teleport-page-header">
-		<el-button type="text" @click="saveTemplate">保存</el-button>
+		<el-button type="text" @click="handleClickSave">保存</el-button>
 		<el-button type="text" @click="preview">预览</el-button>
 	</teleport>
+	<el-dialog title="页面设置" center v-model="visible">
+		<el-form
+			label-position="left"
+			label-width="150px"
+			:rules="formRules"
+			:model="form"
+			ref="form"
+		>
+			<el-form-item label="页面标题：" prop="title">
+				<el-input
+					v-model="form.title"
+					placeholder="请输入标题"
+					size="mini"
+				></el-input>
+			</el-form-item>
+			<el-form-item label="是否需要导出：">
+				<el-radio-group v-model="form.hasExport">
+					<el-radio :label="true">需要</el-radio>
+					<el-radio :label="false">不需要</el-radio>
+				</el-radio-group>
+			</el-form-item>
+		</el-form>
+		<template #footer>
+			<div class="button-group">
+				<el-button type="primary" plain size="mini" @click="closeDialog"
+					>取消</el-button
+				>
+				<el-button type="primary" size="mini" @click="saveTemplate"
+					>保存</el-button
+				>
+			</div>
+		</template>
+	</el-dialog>
 </template>
 
 <script>
@@ -123,12 +160,14 @@ import CustomDrag from "../modules/CustomDrag.vue";
 import ModuleConfigDrawer from "../modules/ModuleConfigDrawer.vue";
 import { copyObj } from "../utils/tools";
 // import { updateTemplate } from "../api/templates";
-import { ElMessage } from "element-plus";
+import { ElMessage as Message } from "element-plus";
 import { CommonDemo } from "../material/FormList/index";
 import CommonOptions from "../material/SelectOptionList/Common";
 import generatorConfig from "@/utils/generatorConfig";
-import { previewTemplate } from "../api/templates";
+import { previewTemplate, updateTemplate } from "../api/templates";
 import modules from "../material/modules";
+import { getPageConfig, getTableData } from "../api/Database";
+import { useRouter } from "vue-router";
 export default {
 	name: "FormList",
 	components: {
@@ -144,10 +183,58 @@ export default {
 			this.getTableConfig(val);
 		},
 	},
+	data() {
+		return {
+			form: {
+				title: "分析页面",
+				hasExport: true,
+			},
+		};
+	},
+	methods: {
+		saveTemplate() {
+			this.$refs.form.validate((valid) => {
+				if (valid) {
+					const params = {
+						name: this.form.title,
+						target_id: this.id,
+						config: {
+							hasExport: this.form.hasExport,
+							formList: this.formList,
+							table: this.columnList,
+						},
+					};
+					updateTemplate(params)
+						.then((res) => {
+							this.visible = false;
+							this.Router.push({ name: "pages" });
+						})
+						.catch((e) => {
+							if (e.data) {
+								Message.error(e.data);
+							} else {
+								Message.error("服务器错误，保存失败");
+							}
+						});
+				} else {
+					return;
+				}
+			});
+		},
+		closeDialog() {
+			this.$refs.form.validate((valid) => {
+				if (valid) {
+					this.visible = false;
+				} else {
+					return;
+				}
+			});
+		},
+	},
 	setup(props, vm) {
+		const Router = useRouter();
 		const state = reactive({
-			hasExport: true,
-			title: "分析页面",
+			visible: false,
 			formList: [],
 			columnList: [],
 			list: [],
@@ -169,22 +256,22 @@ export default {
 				{ label: "日期选择框", value: "date-picker" },
 				{ label: "下拉框", value: "select" },
 			],
+			formRules: {
+				title: [
+					{
+						required: true,
+						message: "标题不能为空",
+						trigger: "blur",
+					},
+				],
+			},
 		});
-		const handleClick = (element) => {
+		const handleClick = (item) => {
 			state.moduleConfigVisible = true;
-			const type = element.type || "input";
-			let config = {};
-			if (element.config) {
-				config = element.config;
-			} else {
-				config = copyObj(modules[type].config);
-				config.label.value = element.label;
-			}
-			state.activeModule = {
-				label: element.label,
-				type,
-				config,
-			};
+			const element = state.formList.find(
+				(e) => e.dragKey === item.dragKey
+			);
+			state.activeModule = element;
 		};
 		const tableConfig = () => {
 			state.moduleConfigVisible = true;
@@ -192,18 +279,11 @@ export default {
 		const getComponent = (name) => {
 			return "common-demo";
 		};
-		const beforeModuleConfigClose = () => {};
-		const saveTemplate = () => {
-			const params = {
-				name: state.title,
-				config: {
-					formList: state.formList,
-					columnList: state.tableConfigList,
-					icon: state.icon,
-					title: state.title,
-					hasExport: state.hasExport,
-				},
-			};
+		const beforeModuleConfigClose = () => {
+			if (state.activeModule.config.default.value) {
+				state.activeModule.value =
+					state.activeModule.config.default.value;
+			}
 		};
 		const preview = () => {};
 		const comTypeChange = () => {
@@ -218,18 +298,56 @@ export default {
 			};
 			getPageConfig(params).then((res) => {
 				state.columnList = res.table;
+				getTableList(id);
 			});
+		};
+		const getTableList = (id) => {
+			const params = {
+				id,
+				pageNo: 1,
+				pageSize: 5,
+			};
+			getTableData(params).then((res) => {
+				state.list = res.list;
+			});
+		};
+		const handleClickSave = () => {
+			state.visible = true;
+		};
+		const deleteFormItem = () => {
+			const dragKey = state.activeModule.dragKey;
+			const index = state.formList.findIndex(
+				(item) => item.dragKey === dragKey
+			);
+			state.formList.splice(index, 1);
+			state.moduleConfigVisible = false;
+		};
+		const itemAdded = (e) => {
+			const index = e.newDraggableIndex;
+			const element = state.formList[index];
+			element.type = element.type || "input";
+			if (!element.config) {
+				element.config = copyObj(modules[element.type].config);
+				element.config.label.value = element.label;
+			}
+			if (!element.hasOwnProperty("value")) {
+				element.value = "";
+			}
 		};
 		return {
 			...toRefs(state),
 			handleClick,
 			tableConfig,
 			getComponent,
-			saveTemplate,
 			beforeModuleConfigClose,
 			preview,
 			comTypeChange,
 			getTableConfig,
+			getTableList,
+			handleClickSave,
+			Router,
+			deleteFormItem,
+			itemAdded,
 		};
 	},
 };

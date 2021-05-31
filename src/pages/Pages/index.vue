@@ -30,13 +30,13 @@
 
 <script>
 import { reactive, toRefs } from "vue";
-import { getPageConfig, getDatabaseList } from "../../api/Database";
 import { ElMessage as Message } from "element-plus";
-import FormList from "./FormList.vue";
+// import FormList from "./FormList.vue";
+import { getTemplates } from "../../api/templates";
 export default {
 	name: "index",
 	components: {
-		FormList,
+		// FormList,
 	},
 	setup() {
 		const state = reactive({
@@ -46,7 +46,7 @@ export default {
 			componentName: "form-list",
 		});
 		const getMenuList = () => {
-			getDatabaseList({}).then((res) => {
+			getTemplates({}).then((res) => {
 				state.menuList = res.list;
 				if (res.list.length > 0) {
 					state.menuOpenIndex = res.list[0].id;

@@ -47,7 +47,7 @@ export default {
 			routes: [
 				{ label: "首页", value: "index" },
 				{ label: "数据中心", value: "Database" },
-				{ label: "页面内容", value: "PageMain" },
+				{ label: "页面内容", value: "Pages" },
 			],
 		});
 		const routerChange = (rou) => {

@@ -30,6 +30,11 @@ export const routes = [
 				path: "dragcreate",
 				component: () => import("@/pages/DragCreate.vue"),
 			},
+			{
+				name: "Pages",
+				path: "pages",
+				component: () => import("../pages/Pages/index.vue"),
+			},
 		],
 	},
 ];

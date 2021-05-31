@@ -8,6 +8,7 @@
 		:group="group"
 		@start="startDrag"
 		@end="endDrag"
+		@add="itemAdded"
 		:clone="handleClone"
 		:component-data="{
 			tag: tag,
@@ -80,8 +81,11 @@ export default {
 		};
 		const endDrag = (e) => {
 			// e.dataTransfer.setData("index", "aaa");
-			vm.emit("endDrag");
+			vm.emit("endDrag", e);
 			state.isDragging = false;
+		};
+		const itemAdded = (e) => {
+			vm.emit("itemAdded", e);
 		};
 		return {
 			...toRefs(state),
@@ -89,6 +93,7 @@ export default {
 			handleClone,
 			startDrag,
 			endDrag,
+			itemAdded,
 		};
 	},
 };
