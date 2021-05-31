@@ -13,7 +13,7 @@ export const getTableData = (params) => {
 
 // 获取所有数据页
 export const getDatabaseList = (params) => {
-	return post(baseurl + "acquire-template/", params);
+	return post(baseurl + "acquire-targets/", params);
 };
 // 编辑数据
 /**

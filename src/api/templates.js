@@ -7,7 +7,7 @@ export const updateTemplate = (params) => {
 };
 // 获取所有模板项
 export const getTemplates = (params) => {
-	return post(baseurl + "users/", params);
+	return post(baseurl + "acquire-templates/", params);
 };
 // 导入excel
 export const postExcel = (params) => {
