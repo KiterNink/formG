@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import { reactive, toRefs } from "vue";
+import { reactive, toRefs, defineComponent } from "vue";
 import { useRouter, useRoute } from "vue-router";
-export default {
+export default defineComponent({
 	name: "index",
 	setup() {
 		const router = useRouter();
@@ -61,7 +61,7 @@ export default {
 			route,
 		};
 	},
-};
+});
 </script>
 
 <style lang="less" scoped>

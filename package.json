@@ -7,9 +7,8 @@
     "serve": "vite preview --port=8066"
   },
   "dependencies": {
-    "@vue/server-renderer": "^3.0.11",
     "axios": "^0.21.1",
-    "element-plus": "^1.0.2-beta.32",
+    "element-plus": "^1.0.2-beta.48",
     "express": "^4.17.1",
     "less": "^4.1.1",
     "less-loader": "^8.0.0",
